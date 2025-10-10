@@ -1,0 +1,9 @@
+<odoo>
+    <record id="seq_ojt_certificate" model="ir.sequence">
+        <field name="name">OJT Certificate</field>
+        <field name="code">ojt.certificate</field>
+        <field name="prefix">CERT-%(year)s-</field>
+        <field name="padding">4</field>
+        <field name="number_next">1</field>
+    </record>
+</odoo>

@@ -1,0 +1,23 @@
+/* Portal Style for OJT Page */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th {
+    background-color: #222;
+    color: white;
+    text-align: center;
+    padding: 8px;
+}
+
+.table td {
+    border: 1px solid #ccc;
+    padding: 6px;
+}
+
+h2 {
+    text-align: center;
+    color: #333;
+    margin-top: 20px;
+}

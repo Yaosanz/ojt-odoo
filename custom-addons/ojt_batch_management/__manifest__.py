@@ -1,0 +1,37 @@
+{
+    'name': 'OJT Batch Management',
+    'version': '18.0.1.0',
+    'author': 'Sandy Budi Wirawan',
+    'category': 'Human Resources',
+    'summary': 'Manage OJT Batches for Internship Programs',
+    'depends': [
+        'base',
+        'mail',
+        'portal',
+        'contacts',
+        'website',    
+    ],
+    'data': [
+        'data/ojt_sequence.xml',
+        'data/email_template_certificate.xml',
+        'security/ir.model.access.csv',
+        'views/ojt_batch_views.xml',
+        'views/ojt_participant_views.xml',
+        'views/ojt_event_link_views.xml',
+        'views/ojt_attendance_views.xml',
+        'views/ojt_progress_views.xml',
+        'views/ojt_certificate_views.xml',
+        'report/report_certificate_template.xml',
+        'report/report_actions.xml',
+        'views/portal/ojt_portal_templates.xml',
+        'views/menus.xml',
+    ],
+    'assets': {
+        'web.assets_frontend': [
+            'ojt_batch_management/static/src/css/portal.css',
+        ],
+    },
+    'installable': True,
+    'application': True,
+    'license': 'LGPL-3',
+}

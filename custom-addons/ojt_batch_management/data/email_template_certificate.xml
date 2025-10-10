@@ -1,0 +1,15 @@
+<odoo>
+    <record id="email_template_certificate" model="mail.template">
+        <field name="name">OJT Certificate Notification</field>
+        <field name="email_from">${(user.email or 'noreply@example.com')|safe}</field>
+        <field name="email_to">${object.participant_id.email|safe}</field>
+        <field name="model_id" ref="model_ojt_certificate"/>
+        <field name="subject">Your OJT Certificate - ${object.batch_id.name or ''}</field>
+        <field name="body_html"><![CDATA[
+            <p>Dear ${object.participant_id.name},</p>
+            <p>Congratulations. Your OJT certificate <b>${object.name}</b> has been issued for batch <b>${object.batch_id.name}</b>.</p>
+            <p>Please find the certificate attached.</p>
+            <p>Regards,<br/>OJT Team</p>
+        ]]></field>
+    </record>
+</odoo>

@@ -1,0 +1,39 @@
+<odoo>
+    <record id="view_ojt_progress_list" model="ir.ui.view">
+        <field name="name">ojt.progress.list</field>
+        <field name="model">ojt.progress</field>
+        <field name="arch" type="xml">
+            <list string="OJT Progress">
+                <field name="participant_id"/>
+                <field name="batch_id"/>
+                <field name="week"/>
+                <field name="evaluation"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ojt_progress_form" model="ir.ui.view">
+        <field name="name">ojt.progress.form</field>
+        <field name="model">ojt.progress</field>
+        <field name="arch" type="xml">
+            <form string="OJT Progress">
+                <sheet>
+                    <group>
+                        <field name="participant_id"/>
+                        <field name="batch_id" readonly="1"/>
+                        <field name="week"/>
+                        <field name="description"/>
+                        <field name="evaluation"/>
+                        <field name="mentor_notes"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ojt_progress" model="ir.actions.act_window">
+        <field name="name">Progress Tracking</field>
+        <field name="res_model">ojt.progress</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

@@ -1,0 +1,41 @@
+<odoo>
+    <!-- Root menu -->
+    <menuitem id="menu_ojt_root"
+              name="OJT Management"
+              sequence="1"/>
+
+    <!-- Submenu Batch -->
+    <menuitem id="menu_ojt_batch"
+              name="Batches"
+              parent="menu_ojt_root"
+              sequence="2"
+              action="action_ojt_batch"/>
+
+    <!-- Submenu Participant -->
+    <menuitem id="menu_ojt_participant"
+              name="Participants"
+              parent="menu_ojt_root"
+              sequence="3"
+              action="action_ojt_participant"/>
+
+    <!-- Submenu Attendance -->
+    <menuitem id="menu_ojt_attendance"
+              name="Attendance"
+              parent="menu_ojt_root"
+              sequence="4"
+              action="action_ojt_attendance"/>
+
+    <!-- Submenu Progress -->
+    <menuitem id="menu_ojt_progress"
+              name="Progress"
+              parent="menu_ojt_root"
+              sequence="5"
+              action="action_ojt_progress"/>
+
+    <!-- Submenu Certificates -->
+    <menuitem id="menu_ojt_certificate"
+              name="Certificates"
+              parent="menu_ojt_root"
+              sequence="6"
+              action="action_ojt_certificate"/>
+</odoo>

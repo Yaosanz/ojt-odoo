@@ -1,0 +1,47 @@
+<odoo>
+    <record id="view_ojt_certificate_list" model="ir.ui.view">
+        <field name="name">ojt.certificate.list</field>
+        <field name="model">ojt.certificate</field>
+        <field name="arch" type="xml">
+            <list string="OJT Certificates">
+                <field name="name"/>
+                <field name="participant_id"/>
+                <field name="batch_id"/>
+                <field name="issue_date"/>
+                <field name="mentor_name"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_ojt_certificate_form" model="ir.ui.view">
+        <field name="name">ojt.certificate.form</field>
+        <field name="model">ojt.certificate</field>
+        <field name="arch" type="xml">
+            <form string="OJT Certificate">
+                <header>
+                    <!-- gunakan atribut invisible (Odoo 17/18) bukan attrs/states -->
+                    <button name="action_issue" string="Issue Certificate" type="object"
+                            class="btn-primary" invisible="state == 'issued'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,issued"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="name" readonly="1"/>
+                        <field name="participant_id"/>
+                        <field name="batch_id" readonly="1"/>
+                        <field name="issue_date"/>
+                        <field name="mentor_name"/>
+                        <field name="remarks"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_ojt_certificate" model="ir.actions.act_window">
+        <field name="name">Certificates</field>
+        <field name="res_model">ojt.certificate</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

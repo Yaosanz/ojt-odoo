@@ -1,0 +1,40 @@
+<odoo>
+    <record id="view_college_teacher_list" model="ir.ui.view">
+        <field name="name">college.teacher.list</field>
+        <field name="model">college.teacher</field>
+        <field name="arch" type="xml">
+            <list string="Teachers">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="department"/>
+                <field name="phone"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_college_teacher_form" model="ir.ui.view">
+        <field name="name">college.teacher.form</field>
+        <field name="model">college.teacher</field>
+        <field name="arch" type="xml">
+            <form string="Teachers">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="employee_id"/>
+                        <field name="department"/>
+                        <field name="phone"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_college_teacher" model="ir.actions.act_window">
+        <field name="name">Teachers</field>
+        <field name="res_model">college.teacher</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_college_root" name="College ERP"/>
+    <menuitem id="menu_college_teacher" name="Teachers" parent="menu_college_root" action="action_college_teacher"/>
+</odoo>
