@@ -56,8 +56,6 @@ class OjtBatch(models.Model):
     assignment_count = fields.Integer(compute='_compute_counts', store=True)
     event_count = fields.Integer(compute='_compute_counts', store=True)
 
-    @api.depends('participant_ids', 'participant_ids.assignment_submit_ids',
-                 'event_link_ids')
     def _compute_counts(self):
         for record in self:
             record.participant_count = len(record.participant_ids)
@@ -65,7 +63,6 @@ class OjtBatch(models.Model):
             record.assignment_count = len(assignments)
             record.event_count = len(record.event_link_ids)
 
-    @api.depends('participant_ids.state', 'participant_ids.score_final')
     def _compute_progress_ratio(self):
         for record in self:
             if not record.participant_ids:

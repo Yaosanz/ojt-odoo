@@ -1,10 +1,8 @@
 import uuid
-from odoo import models, fields, api, _
-
-from odoo.exceptions import UserError, ValidationError
-from datetime import date
 import base64
-
+from datetime import date
+from odoo import models, fields, api, _
+from odoo.exceptions import UserError, ValidationError
 
 
 class OjtCertificate(models.Model):
@@ -13,19 +11,47 @@ class OjtCertificate(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = "issue_date desc"
 
-    name = fields.Char(string="Certificate No.", required=True, copy=False, readonly=True, default="New")
-    participant_id = fields.Many2one('ojt.participant', string="Participant", required=True, ondelete='cascade')
-    batch_id = fields.Many2one('ojt.batch', string="Batch", related='participant_id.batch_id', store=True)
-    issue_date = fields.Date(string="Issue Date", default=fields.Date.context_today)
-    issued_on = fields.Date(string="Issued On", readonly=True)
+    # ----------------------------------------------------------
+    # FIELDS
+    # ----------------------------------------------------------
+    name = fields.Char(
+        string="Certificate No.",
+        required=True,
+        copy=False,
+        readonly=True,
+        default="New"
+    )
+    participant_id = fields.Many2one(
+        'ojt.participant',
+        string="Participant",
+        required=True,
+        ondelete='cascade'
+    )
+    batch_id = fields.Many2one(
+        'ojt.batch',
+        string="Batch",
+        related='participant_id.batch_id',
+        store=True
+    )
+    issue_date = fields.Date(
+        string="Issue Date",
+        default=fields.Date.context_today
+    )
+    issued_on = fields.Date(
+        string="Issued On",
+        readonly=True
+    )
     mentor_name = fields.Char(string="Mentor / Supervisor")
     remarks = fields.Text(string="Remarks / Notes")
+
     pdf_file = fields.Binary(string="Certificate File", readonly=True)
     pdf_filename = fields.Char(string="PDF Filename")
+
     state = fields.Selection([
         ('draft', 'Draft'),
         ('issued', 'Issued'),
     ], string="Status", default='draft')
+
     serial = fields.Char(string="Serial Number", readonly=True)
     attendance_rate = fields.Float(string="Attendance Rate", readonly=True)
     final_score = fields.Float(string="Final Score", readonly=True)
@@ -36,6 +62,9 @@ class OjtCertificate(models.Model):
          'Each participant can only have one certificate!')
     ]
 
+    # ----------------------------------------------------------
+    # CREATE METHOD
+    # ----------------------------------------------------------
     @api.model
     def create(self, vals):
         """Generate automatic certificate number"""
@@ -63,7 +92,7 @@ class OjtCertificate(models.Model):
             if report:
                 break
 
-        # Fallback search by model
+        # Fallback search by model if no explicit XML ID found
         if not report:
             report = self.env['ir.actions.report'].search([
                 ('model', '=', 'ojt.certificate'),
@@ -71,17 +100,17 @@ class OjtCertificate(models.Model):
             ], limit=1)
 
         if not report:
-            raise UserError(
+            raise UserError(_(
                 "Certificate report not found.\n\n"
                 "Please ensure a report for model 'ojt.certificate' exists in XML.\n"
                 "Expected XML ID: 'ojt_batch_management.action_report_certificate'"
-            )
+            ))
 
-        # Render QWeb report as PDF
+        # ✅ Correct call: pass recordset, not list
         try:
-            pdf_content, _ = report._render_qweb_pdf([self.id])
-        except AttributeError:
-            pdf_content = report.render_qweb_pdf([self.id])[0]
+            pdf_content, _ = report._render_qweb_pdf(self)
+        except Exception as e:
+            raise UserError(_("Failed to render certificate PDF.\n\nError: %s") % str(e))
 
         pdf_base64 = base64.b64encode(pdf_content).decode('utf-8')
         filename = f"{self.name}.pdf"
@@ -92,7 +121,7 @@ class OjtCertificate(models.Model):
             'pdf_filename': filename,
         })
 
-        # Create attachment for tracking
+        # Create attachment for tracking / email
         attachment = self.env['ir.attachment'].create({
             'name': filename,
             'type': 'binary',
@@ -105,7 +134,7 @@ class OjtCertificate(models.Model):
         return attachment
 
     # ----------------------------------------------------------
-    # ACTION ISSUE
+    # ISSUE ACTION
     # ----------------------------------------------------------
     def action_issue(self):
         """Generate certificate, attach PDF, and email it to participant"""
@@ -127,28 +156,25 @@ class OjtCertificate(models.Model):
         try:
             attachment = self.generate_pdf()
         except Exception as e:
-            raise UserError(
+            raise UserError(_(
                 "Failed to generate certificate PDF.\n\n"
-                f"{str(e)}\n\n"
+                "%s\n\n"
                 "Please check that:\n"
                 "1. Report XML ID exists (e.g. ojt_batch_management.action_report_certificate)\n"
                 "2. Report template is valid (no XML errors)\n"
                 "3. Report model is set to 'ojt.certificate'"
-            )
+            ) % str(e))
 
-        # Send email
+        # Send email if template exists
         template = self.env.ref('ojt_batch_management.email_template_certificate', raise_if_not_found=False)
         if template:
             try:
                 mail_values = template.generate_email(self.id)
                 mail = self.env['mail.mail'].create(mail_values)
-
                 if attachment:
                     mail.write({'attachment_ids': [(4, attachment.id)]})
-
                 mail.send()
             except Exception as e:
-                # Log but continue
                 self.env['ir.logging'].sudo().create({
                     'name': 'ojt_batch_management',
                     'type': 'server',
@@ -181,6 +207,9 @@ class OjtCertificate(models.Model):
             }
         }
 
+    # ----------------------------------------------------------
+    # GRADE COMPUTATION
+    # ----------------------------------------------------------
     def _compute_grade(self, score):
         """Compute grade based on final score"""
         if score >= 90:
@@ -191,5 +220,4 @@ class OjtCertificate(models.Model):
             return 'C'
         elif score >= 60:
             return 'D'
-        else:
-            return 'F'
+        return 'F'

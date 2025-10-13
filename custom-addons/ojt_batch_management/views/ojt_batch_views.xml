@@ -43,7 +43,7 @@
                 <field name="color"/>
                 <templates>
                     <t t-name="kanban-box">
-                        <div t-attf-class="oe_kanban_card oe_kanban_global_click {{ 'oe_kanban_card_highlight' if state == 'ongoing' else '' }}">
+                        <div class="oe_kanban_card oe_kanban_global_click" t-att-class="state == 'ongoing' and 'oe_kanban_card_highlight' or ''">
                             <div class="o_kanban_record_top">
                                 <div class="o_kanban_record_headings">
                                     <strong class="o_kanban_record_title">
@@ -80,7 +80,16 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <span t-attf-class="badge badge-{{ 'success' if state == 'ongoing' else 'info' if state == 'done' else 'danger' if state == 'cancel' else 'secondary' }}">
+                                            <span class="badge badge-success" t-if="record.state.raw_value == 'ongoing'">
+                                                <field name="state"/>
+                                            </span>
+                                            <span class="badge badge-info" t-elif="record.state.raw_value == 'done'">
+                                                <field name="state"/>
+                                            </span>
+                                            <span class="badge badge-danger" t-elif="record.state.raw_value == 'cancel'">
+                                                <field name="state"/>
+                                            </span>
+                                            <span class="badge badge-secondary" t-else="">
                                                 <field name="state"/>
                                             </span>
                                         </div>

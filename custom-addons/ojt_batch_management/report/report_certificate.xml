@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <report
+        id="action_report_certificate"
+        model="ojt.certificate"
+        string="Certificate"
+        report_type="qweb-pdf"
+        name="ojt_batch_management.report_certificate_template"
+        file="ojt_batch_management.report_certificate_template"
+        print_report_name="'Certificate - %s' % (object.name)"
+    />
+</odoo>

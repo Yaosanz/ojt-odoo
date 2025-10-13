@@ -8,7 +8,7 @@ class OjtAttendance(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = "check_in desc"
 
-    batch_id = fields.Many2one('ojt.batch', string="Batch", required=True, tracking=True)
+    batch_id = fields.Many2one('ojt.batch', string="Batch", related='participant_id.batch_id', store=True, readonly=True, tracking=True)
     event_link_id = fields.Many2one('ojt.event.link', string="Event", required=True,
                                     domain="[('batch_id', '=', batch_id)]", tracking=True)
     event_id = fields.Many2one('event.event', string="Event", related='event_link_id.event_id', store=True)

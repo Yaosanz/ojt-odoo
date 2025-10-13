@@ -5,3 +5,6 @@ access_ojt_event_link,access_ojt_event_link,model_ojt_event_link,,1,1,1,1
 access_ojt_attendance,access_ojt_attendance,model_ojt_attendance,,1,1,1,1
 access_ojt_progress,access_ojt_progress,model_ojt_progress,,1,1,1,1
 access_ojt_certificate,access_ojt_certificate,model_ojt_certificate,,1,1,1,1
+access_ojt_assignment_submit_user,access_ojt_assignment_submit_user,model_ojt_assignment_submit,base.group_user,1,1,1,1
+access_ojt_assignment_submit_portal,access_ojt_assignment_submit_portal,model_ojt_assignment_submit,base.group_portal,1,1,1,0
+access_ojt_assignment_submit_manager,access_ojt_assignment_submit_manager,model_ojt_assignment_submit,base.group_system,1,1,1,1

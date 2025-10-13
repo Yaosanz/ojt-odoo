@@ -157,10 +157,12 @@
 
                         <page string="Assignments">
                             <field name="assignment_submit_ids" readonly="1">
-                                <list>
+                                <list string="Assignment Submissions">
                                     <field name="assignment_id"/>
                                     <field name="submitted_on"/>
                                     <field name="score"/>
+                                    <field name="state"/>
+                                    <field name="late"/>
                                 </list>
                             </field>
                         </page>

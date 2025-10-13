@@ -35,3 +35,10 @@ find /var/lib/odoo -type f -name "*.pyc" -delete
 rm -rf /var/lib/odoo/.local/share/Odoo/*
 exit
 exit
+cat /etc/odoo/odoo.conf | grep db_
+psql -h db -U odoo -l
+exit
+psql -h db -U odoo -d odoo -c "SELECT version();"
+psql -h db -U odoo -d odoo
+\q
+exit

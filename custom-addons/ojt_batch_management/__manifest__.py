@@ -28,6 +28,7 @@
         'data/email_template_certificate.xml',
         
         # Reports
+        'report/report_certificate.xml',
         'report/report_certificate_template.xml',
         'report/report_actions.xml',
         
