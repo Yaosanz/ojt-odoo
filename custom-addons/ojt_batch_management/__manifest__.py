@@ -9,22 +9,47 @@
         'mail',
         'portal',
         'contacts',
-        'website',    
+        'website',
+        'hr_recruitment',
+        'website_slides',
+        'event',
+        'survey',
+        'calendar',
+        'rating',
+        'utm',
     ],
     'data': [
-        'data/ojt_sequence.xml',
+        # Security must come FIRST
+        'security/ojt_security.xml',
         'security/ir.model.access.csv',
+        
+        # Data files
+        'data/ojt_sequence.xml',
+        'data/email_template_certificate.xml',
+        
+        # Reports
         'report/report_certificate_template.xml',
         'report/report_actions.xml',
-        'data/email_template_certificate.xml',
+        
+        # Actions BEFORE menus
+        'views/actions.xml',
+        
+        # Menus AFTER actions
+        'views/menus.xml',
+        
+        # Other views
         'views/ojt_batch_views.xml',
         'views/ojt_participant_views.xml',
-        'views/ojt_event_link_views.xml',
         'views/ojt_attendance_views.xml',
         'views/ojt_progress_views.xml',
         'views/ojt_certificate_views.xml',
+        'views/ojt_assignment_views.xml',
+        'views/ojt_assignment_submit_views.xml',
+        'views/ojt_event_link_views.xml',
+        
+        # Portal templates last
+        'views/certificate_verify_templates.xml',
         'views/portal/ojt_portal_templates.xml',
-        'views/menus.xml',
     ],
     'assets': {
         'web.assets_frontend': [

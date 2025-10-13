@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_score_distribution_template">
+        <t t-call="web.external_layout">
+            <div class="page">
+                <!-- Header -->
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h1 style="color: #007bff; font-size: 24px;">Score Distribution Report</h1>
+                    <h2 style="color: #333;"><t t-esc="batch_name"/></h2>
+                    <p style="font-size: 14px; color: #666;">
+                        Analysis Period: <t t-esc="start_date"/> to <t t-esc="end_date"/>
+                    </p>
+                </div>
+
+                <!-- Score Statistics -->
+                <div style="margin: 30px 0;">
+                    <h3>Score Statistics</h3>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ddd; background-color: #f8f9fa; width: 20%;"><strong>Total Participants:</strong></td>
+                            <td style="padding: 10px; border: 1px solid #ddd;"><t t-esc="total_participants"/></td>
+                            <td style="padding: 10px; border: 1px solid #ddd; background-color: #f8f9fa; width: 20%;"><strong>Highest Score:</strong></td>
+                            <td style="padding: 10px; border: 1px solid #ddd;"><t t-esc="highest_score"/>%</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ddd; background-color: #f8f9fa;"><strong>Average Score:</strong></td>
+                            <td style="padding: 10px; border: 1px solid #ddd;"><t t-esc="avg_score"/>%</td>
+                            <td style="padding: 10px; border: 1px solid #ddd; background-color: #f8f9fa;"><strong>Lowest Score:</strong></td>
+                            <td style="padding: 10px; border: 1px solid #ddd;"><t t-esc="lowest_score"/>%</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ddd; background-color: #f8f9fa;"><strong>Median Score:</strong></td>
+                            <td style="padding: 10px; border: 1px solid #ddd;"><t t-esc="median_score"/>%</td>
+                            <td style="padding: 10px; border: 1px solid #ddd; background-color: #f8f9fa;"><strong>Standard Deviation:</strong></td>
+                            <td style="padding: 10px; border: 1px solid #ddd;"><t t-esc="std_deviation"/></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- Grade Distribution -->
+                <div style="margin: 30px 0;">
+                    <h3>Grade Distribution</h3>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                        <thead>
+                            <tr style="background-color: #f8f9fa;">
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Grade</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Range</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Count</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="grade_distribution" t-as="grade">
+                                <tr>
+                                    <td style="padding: 8px; border: 1px solid #ddd;"><t t-esc="grade.name"/></td>
+                                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center;"><t t-esc="grade.range"/></td>
+                                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center;"><t t-esc="grade.count"/></td>
+                                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center;"><t t-esc="grade.percentage"/>%</td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Score Ranges Distribution -->
+                <div style="margin: 30px 0;">
+                    <h3>Score Ranges Distribution</h3>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                        <thead>
+                            <tr style="background-color: #f8f9fa;">
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Score Range</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Count</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Percentage</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Visual</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="score_ranges" t-as="range">
+                                <tr>
+                                    <td style="padding: 8px; border: 1px solid #ddd;"><t t-esc="range.label"/></td>
+                                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center;"><t t-esc="range.count"/></td>
+                                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center;"><t t-esc="range.percentage"/>%</td>
+                                    <td style="padding: 8px; border: 1px solid #ddd;">
+                                        <div style="background-color: #007bff; height: 20px; width: <t t-esc="range.percentage"/>%;"></div>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Individual Scores -->
+                <div style="margin: 30px 0;">
+                    <h3>Individual Scores</h3>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                        <thead>
+                            <tr style="background-color: #f8f9fa;">
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Participant</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Student ID</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Final Score</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Average Score</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Grade</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Attendance Rate</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="participant_scores" t-as="participant">
+                                <tr>
+                                    <td style="padding: 8px; border: 1px solid #ddd;"><t t-esc="participant.name"/></td>
+                                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center;"><t t-esc="participant.student_id"/></td>
+                                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center;"><t t-esc="participant.final_score"/>%</td>
+                                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center;"><t t-esc="participant.avg_score"/>%</td>
+                                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center;"><t t-esc="participant.grade"/></td>
+                                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center;"><t t-esc="participant.attendance_rate"/>%</td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Performance Insights -->
+                <div style="margin: 30px 0;">
+                    <h3>Performance Insights</h3>
+                    <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px;">
+                        <ul>
+                            <li><strong>Top Performers:</strong> <t t-esc="top_performers_count"/> participants scored above 90%</li>
+                            <li><strong>At Risk:</strong> <t t-esc="at_risk_count"/> participants scored below 60%</li>
+                            <li><strong>Correlation:</strong> Attendance rate vs Final score correlation coefficient: <t t-esc="correlation"/></li>
+                            <li><strong>Grade Distribution:</strong> Most common grade is <t t-esc="most_common_grade"/> (<t t-esc="most_common_percentage"/>% of participants)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div style="text-align: center; margin-top: 50px; border-top: 1px solid #ddd; padding-top: 20px;">
+                    <p style="font-size: 12px; color: #666;">
+                        Report generated on <t t-esc="current_date"/><br/>
+                        OJT Management System - Score Distribution Analysis
+                    </p>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

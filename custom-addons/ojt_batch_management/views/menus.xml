@@ -38,4 +38,18 @@
               parent="menu_ojt_root"
               sequence="6"
               action="action_ojt_certificate"/>
+
+    <!-- Submenu Assignments -->
+    <menuitem id="menu_ojt_assignment"
+              name="Assignments"
+              parent="menu_ojt_root"
+              sequence="7"
+              action="action_ojt_assignment"/>
+
+    <!-- Submenu Assignment Submissions -->
+    <menuitem id="menu_ojt_assignment_submit"
+              name="Submissions"
+              parent="menu_ojt_root"
+              sequence="8"
+              action="action_ojt_assignment_submit"/>
 </odoo>

@@ -34,3 +34,4 @@ xmllint --noout $(find . -type f -name "*.xml")
 find /var/lib/odoo -type f -name "*.pyc" -delete
 rm -rf /var/lib/odoo/.local/share/Odoo/*
 exit
+exit

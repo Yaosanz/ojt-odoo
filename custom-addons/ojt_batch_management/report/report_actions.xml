@@ -11,4 +11,26 @@
         <field name="binding_model_id" ref="model_ojt_certificate"/>
         <field name="binding_type">report</field>
     </record>
+
+    <record id="action_report_attendance_summary" model="ir.actions.report">
+        <field name="name">Attendance Summary Report</field>
+        <field name="model">ojt.batch</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ojt_batch_management.report_attendance_summary_template</field>
+        <field name="report_file">ojt_batch_management.report_attendance_summary_template</field>
+        <field name="print_report_name">'Attendance_Summary_' + object.name</field>
+        <field name="binding_model_id" ref="model_ojt_batch"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <record id="action_report_score_distribution" model="ir.actions.report">
+        <field name="name">Score Distribution Report</field>
+        <field name="model">ojt.batch</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ojt_batch_management.report_score_distribution_template</field>
+        <field name="report_file">ojt_batch_management.report_score_distribution_template</field>
+        <field name="print_report_name">'Score_Distribution_' + object.name</field>
+        <field name="binding_model_id" ref="model_ojt_batch"/>
+        <field name="binding_type">report</field>
+    </record>
 </odoo>

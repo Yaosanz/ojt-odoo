@@ -1,17 +1,23 @@
+import uuid
 from odoo import models, fields, api, _
-from odoo.exceptions import UserError
+
+from odoo.exceptions import UserError, ValidationError
+from datetime import date
+import base64
 
 
 
 class OjtCertificate(models.Model):
     _name = "ojt.certificate"
     _description = "OJT Completion Certificate"
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = "issue_date desc"
 
     name = fields.Char(string="Certificate No.", required=True, copy=False, readonly=True, default="New")
     participant_id = fields.Many2one('ojt.participant', string="Participant", required=True, ondelete='cascade')
     batch_id = fields.Many2one('ojt.batch', string="Batch", related='participant_id.batch_id', store=True)
     issue_date = fields.Date(string="Issue Date", default=fields.Date.context_today)
+    issued_on = fields.Date(string="Issued On", readonly=True)
     mentor_name = fields.Char(string="Mentor / Supervisor")
     remarks = fields.Text(string="Remarks / Notes")
     pdf_file = fields.Binary(string="Certificate File", readonly=True)
@@ -20,6 +26,10 @@ class OjtCertificate(models.Model):
         ('draft', 'Draft'),
         ('issued', 'Issued'),
     ], string="Status", default='draft')
+    serial = fields.Char(string="Serial Number", readonly=True)
+    attendance_rate = fields.Float(string="Attendance Rate", readonly=True)
+    final_score = fields.Float(string="Final Score", readonly=True)
+    grade = fields.Char(string="Grade", readonly=True)
 
     _sql_constraints = [
         ('unique_certificate_per_participant', 'unique(participant_id)',
@@ -106,7 +116,11 @@ class OjtCertificate(models.Model):
 
         self.write({
             'state': 'issued',
-            'issue_date': date.today(),
+            'issued_on': date.today(),
+            'serial': str(uuid.uuid4()),
+            'attendance_rate': self.participant_id.attendance_rate,
+            'final_score': self.participant_id.score_final,
+            'grade': self._compute_grade(self.participant_id.score_final),
         })
 
         # Generate and attach PDF
@@ -166,3 +180,16 @@ class OjtCertificate(models.Model):
                 'sticky': False,
             }
         }
+
+    def _compute_grade(self, score):
+        """Compute grade based on final score"""
+        if score >= 90:
+            return 'A'
+        elif score >= 80:
+            return 'B'
+        elif score >= 70:
+            return 'C'
+        elif score >= 60:
+            return 'D'
+        else:
+            return 'F'

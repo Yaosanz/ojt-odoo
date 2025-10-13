@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Server Action: Issue Certificates for Eligible Participants -->
+        <record id="ir_server_action_issue_certificates" model="ir.actions.server">
+            <field name="name">Issue Certificates for Eligible Participants</field>
+            <field name="model_id" ref="ojt_batch_management.model_ojt_batch"/>
+            <field name="binding_model_id" ref="ojt_batch_management.model_ojt_batch"/>
+            <field name="state">code</field>
+            <field name="code">
+batch = records
+for rec in batch:
+    eligible_participants = rec.participant_ids.filtered(
+        lambda p: p.attendance_rate >= rec.certificate_rule_attendance
+        and p.score_final >= rec.certificate_rule_score
+        and p.state == 'completed'
+    )
+    for participant in eligible_participants:
+        if not participant.certificate_id:
+            certificate = env['ojt.certificate'].create({
+                'participant_id': participant.id,
+                'batch_id': rec.id,
+                'state': 'issued',
+            })
+            participant.certificate_id = certificate.id
+            # Send email notification
+            template = env.ref('ojt_batch_management.email_template_certificate', raise_if_not_found=False)
+            if template:
+                template.send_mail(certificate.id, force_send=True)
+            </field>
+        </record>
+
+        <!-- Server Action: Generate Attendance Report -->
+        <record id="ir_server_action_attendance_report" model="ir.actions.server">
+            <field name="name">Generate Attendance Report</field>
+            <field name="model_id" ref="ojt_batch_management.model_ojt_batch"/>
+            <field name="binding_model_id" ref="ojt_batch_management.model_ojt_batch"/>
+            <field name="state">code</field>
+            <field name="code">
+batch = records
+for rec in batch:
+    # Generate attendance summary report
+    report_action = env.ref('ojt_batch_management.action_report_attendance_summary', raise_if_not_found=False)
+    if report_action:
+        report_action.with_context(active_ids=[rec.id]).report_action(rec)
+            </field>
+        </record>
+
+        <!-- Server Action: Generate Score Report -->
+        <record id="ir_server_action_score_report" model="ir.actions.server">
+            <field name="name">Generate Score Report</field>
+            <field name="model_id" ref="ojt_batch_management.model_ojt_batch"/>
+            <field name="binding_model_id" ref="ojt_batch_management.model_ojt_batch"/>
+            <field name="state">code</field>
+            <field name="code">
+batch = records
+for rec in batch:
+    # Generate score distribution report
+    report_action = env.ref('ojt_batch_management.action_report_score_distribution', raise_if_not_found=False)
+    if report_action:
+        report_action.with_context(active_ids=[rec.id]).report_action(rec)
+            </field>
+        </record>
+    </data>
+</odoo>

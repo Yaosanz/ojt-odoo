@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Batch Action -->
+    <record id="action_ojt_batch" model="ir.actions.act_window">
+        <field name="name">Batches</field>
+        <field name="res_model">ojt.batch</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first batch
+            </p>
+        </field>
+    </record>
+
+    <!-- Participant Action -->
+    <record id="action_ojt_participant" model="ir.actions.act_window">
+        <field name="name">Participants</field>
+        <field name="res_model">ojt.participant</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first participant
+            </p>
+        </field>
+    </record>
+
+    <!-- Attendance Action -->
+    <record id="action_ojt_attendance" model="ir.actions.act_window">
+        <field name="name">Attendance</field>
+        <field name="res_model">ojt.attendance</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Record your first attendance
+            </p>
+        </field>
+    </record>
+
+    <!-- Progress Action -->
+    <record id="action_ojt_progress" model="ir.actions.act_window">
+        <field name="name">Progress</field>
+        <field name="res_model">ojt.progress</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Track your first progress entry
+            </p>
+        </field>
+    </record>
+
+    <!-- Certificate Action -->
+    <record id="action_ojt_certificate" model="ir.actions.act_window">
+        <field name="name">Certificates</field>
+        <field name="res_model">ojt.certificate</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first certificate
+            </p>
+        </field>
+    </record>
+
+    <!-- Assignment Action -->
+    <record id="action_ojt_assignment" model="ir.actions.act_window">
+        <field name="name">Assignments</field>
+        <field name="res_model">ojt.assignment</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first assignment
+            </p>
+        </field>
+    </record>
+
+    <!-- Assignment Submission Action -->
+    <record id="action_ojt_assignment_submit" model="ir.actions.act_window">
+        <field name="name">Submissions</field>
+        <field name="res_model">ojt.assignment.submit</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                View assignment submissions
+            </p>
+        </field>
+    </record>
+</odoo>

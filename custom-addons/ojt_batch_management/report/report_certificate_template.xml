@@ -2,20 +2,87 @@
 <odoo>
     <template id="report_certificate_template">
         <t t-call="web.external_layout">
-            <div class="page">
-                <h2 style="text-align:center;">OJT Completion Certificate</h2>
-                <p style="text-align:center;">
-                    This certifies that <strong><t t-esc="object.participant_id.name or ''"/></strong>
-                    has successfully completed the On-the-Job Training program.
-                </p>
-                <p style="text-align:center;">
-                    Batch: <t t-esc="object.batch_id.name or ''"/><br/>
-                    Issued on: <t t-esc="object.issue_date or ''"/><br/>
-                    Mentor: <t t-esc="object.mentor_name or ''"/>
-                </p>
-                <br/>
-                <p style="text-align:center;">Remarks:</p>
-                <p style="text-align:center;"><t t-esc="object.remarks or ''"/></p>
+            <div class="page" style="border: 5px solid #007bff; padding: 20px; margin: 20px;">
+                <!-- Header -->
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h1 style="color: #007bff; font-size: 28px; margin-bottom: 10px;">Certificate of Completion</h1>
+                    <h2 style="color: #333; font-size: 20px;">On-the-Job Training Program</h2>
+                </div>
+
+                <!-- Certificate Body -->
+                <div style="text-align: center; margin: 40px 0;">
+                    <p style="font-size: 16px; margin-bottom: 20px;">This is to certify that</p>
+                    <h3 style="font-size: 24px; color: #007bff; margin: 20px 0; text-decoration: underline;">
+                        <t t-esc="object.participant_id.name or ''"/>
+                    </h3>
+                    <p style="font-size: 16px; margin-bottom: 30px;">
+                        has successfully completed the On-the-Job Training program with outstanding performance.
+                    </p>
+                </div>
+
+                <!-- Details Table -->
+                <table style="width: 100%; margin: 30px 0; border-collapse: collapse;">
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd; background-color: #f8f9fa; width: 30%;"><strong>Batch:</strong></td>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><t t-esc="object.batch_id.name or ''"/></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd; background-color: #f8f9fa;"><strong>Student ID:</strong></td>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><t t-esc="object.participant_id.student_id or ''"/></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd; background-color: #f8f9fa;"><strong>Training Period:</strong></td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">
+                            <t t-esc="object.participant_id.start_date or ''"/> to <t t-esc="object.participant_id.end_date or ''"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd; background-color: #f8f9fa;"><strong>Attendance Rate:</strong></td>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><t t-esc="object.attendance_rate or 0"/>%</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd; background-color: #f8f9fa;"><strong>Final Score:</strong></td>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><t t-esc="object.final_score or 0"/>%</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd; background-color: #f8f9fa;"><strong>Grade:</strong></td>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><t t-esc="object.grade or ''"/></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd; background-color: #f8f9fa;"><strong>Issued Date:</strong></td>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><t t-esc="object.issue_date or ''"/></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd; background-color: #f8f9fa;"><strong>Mentor/Supervisor:</strong></td>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><t t-esc="object.mentor_name or ''"/></td>
+                    </tr>
+                </table>
+
+                <!-- QR Code Section -->
+                <div style="text-align: center; margin: 30px 0;">
+                    <t t-if="object.qr_token">
+                        <div style="display: inline-block; border: 2px solid #007bff; padding: 10px;">
+                            <img t-attf-src="/report/barcode/?type=QR&amp;value={{ object.qr_token }}&amp;width=100&amp;height=100" alt="QR Code"/>
+                        </div>
+                        <p style="font-size: 12px; color: #666; margin-top: 10px;">Scan to verify certificate authenticity</p>
+                    </t>
+                </div>
+
+                <!-- Remarks -->
+                <t t-if="object.remarks">
+                    <div style="margin: 30px 0;">
+                        <h4 style="color: #007bff;">Remarks:</h4>
+                        <p style="font-style: italic;"><t t-esc="object.remarks"/></p>
+                    </div>
+                </t>
+
+                <!-- Footer -->
+                <div style="text-align: center; margin-top: 50px; border-top: 2px solid #007bff; padding-top: 20px;">
+                    <p style="font-size: 14px; color: #666;">
+                        This certificate is issued by the OJT Management System<br/>
+                        Certificate ID: <strong><t t-esc="object.name"/></strong>
+                    </p>
+                </div>
             </div>
         </t>
     </template>
