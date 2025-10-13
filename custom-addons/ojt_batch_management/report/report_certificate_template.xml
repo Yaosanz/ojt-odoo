@@ -1,24 +1,22 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="ojt_certificate_template">
-        <t t-call="web.html_container">
-            <t t-foreach="docs" t-as="doc">
-                <div class="page">
-                    <h2 style="text-align:center; color:#003366;">
-                        On-the-Job Training Certificate
-                    </h2>
-                    <p style="text-align:center; margin-top:30px;">
-                        This is to certify that
-                        <strong><t t-esc="doc.participant_id.name"/></strong><br/>
-                        has successfully completed the On-the-Job Training Program
-                        under <strong><t t-esc="doc.batch_id.name"/></strong>.
-                    </p>
-                    <p style="text-align:center; margin-top:30px;">
-                        Issued on: <t t-esc="doc.date_issued"/> <br/>
-                        <strong>OJT Administration</strong>
-                    </p>
-                </div>
-            </t>
+    <template id="report_certificate_template">
+        <t t-call="web.external_layout">
+            <div class="page">
+                <h2 style="text-align:center;">OJT Completion Certificate</h2>
+                <p style="text-align:center;">
+                    This certifies that <strong><t t-esc="object.participant_id.name or ''"/></strong>
+                    has successfully completed the On-the-Job Training program.
+                </p>
+                <p style="text-align:center;">
+                    Batch: <t t-esc="object.batch_id.name or ''"/><br/>
+                    Issued on: <t t-esc="object.issue_date or ''"/><br/>
+                    Mentor: <t t-esc="object.mentor_name or ''"/>
+                </p>
+                <br/>
+                <p style="text-align:center;">Remarks:</p>
+                <p style="text-align:center;"><t t-esc="object.remarks or ''"/></p>
+            </div>
         </t>
     </template>
 </odoo>

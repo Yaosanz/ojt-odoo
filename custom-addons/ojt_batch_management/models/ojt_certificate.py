@@ -1,7 +1,7 @@
-# -*- coding: utf-8 -*-
-import base64
-from datetime import date
 from odoo import models, fields, api, _
+from odoo.exceptions import UserError
+
+
 
 class OjtCertificate(models.Model):
     _name = "ojt.certificate"
@@ -28,70 +28,141 @@ class OjtCertificate(models.Model):
 
     @api.model
     def create(self, vals):
+        """Generate automatic certificate number"""
         if vals.get('name', 'New') == 'New':
             vals['name'] = self.env['ir.sequence'].next_by_code('ojt.certificate') or 'New'
-        record = super(OjtCertificate, self).create(vals)
-        return record
+        return super().create(vals)
 
+    # ----------------------------------------------------------
+    # PDF GENERATION
+    # ----------------------------------------------------------
     def generate_pdf(self):
-        """Generate PDF from QWeb report, store as attachment and in pdf_file field"""
+        """Generate certificate PDF and attach it to the record"""
         self.ensure_one()
-        # render qweb pdf
-        report = self.env.ref('ojt_batch_management.report_ojt_certificate', False)
+
+        # Try multiple possible report references
+        report = None
+        possible_refs = [
+            'ojt_batch_management.action_report_certificate',
+            'ojt_batch_management.report_certificate',
+            'ojt_batch_management.report_ojt_certificate',
+        ]
+
+        for ref in possible_refs:
+            report = self.env.ref(ref, raise_if_not_found=False)
+            if report:
+                break
+
+        # Fallback search by model
         if not report:
-            raise UserError(_("Certificate report not found."))
-        pdf_content = report._render_qweb_pdf([self.id])[0]  # bytes
-        datas = base64.b64encode(pdf_content).decode('utf-8')
+            report = self.env['ir.actions.report'].search([
+                ('model', '=', 'ojt.certificate'),
+                ('report_type', '=', 'qweb-pdf')
+            ], limit=1)
+
+        if not report:
+            raise UserError(
+                "Certificate report not found.\n\n"
+                "Please ensure a report for model 'ojt.certificate' exists in XML.\n"
+                "Expected XML ID: 'ojt_batch_management.action_report_certificate'"
+            )
+
+        # Render QWeb report as PDF
+        try:
+            pdf_content, _ = report._render_qweb_pdf([self.id])
+        except AttributeError:
+            pdf_content = report.render_qweb_pdf([self.id])[0]
+
+        pdf_base64 = base64.b64encode(pdf_content).decode('utf-8')
         filename = f"{self.name}.pdf"
-        # store in binary field
+
+        # Write PDF into record
         self.write({
-            'pdf_file': datas,
+            'pdf_file': pdf_base64,
             'pdf_filename': filename,
         })
-        # create attachment linked to record
+
+        # Create attachment for tracking
         attachment = self.env['ir.attachment'].create({
             'name': filename,
             'type': 'binary',
-            'datas': datas,
+            'datas': pdf_base64,
             'res_model': 'ojt.certificate',
             'res_id': self.id,
             'mimetype': 'application/pdf',
         })
+
         return attachment
 
+    # ----------------------------------------------------------
+    # ACTION ISSUE
+    # ----------------------------------------------------------
     def action_issue(self):
-        """Issue certificate: generate PDF, attach, send email to participant"""
+        """Generate certificate, attach PDF, and email it to participant"""
         self.ensure_one()
+
         if self.state == 'issued':
             return True
-        # set state and issue date
-        self.state = 'issued'
-        self.issue_date = date.today()
-        # generate pdf and attachment
-        attachment = self.generate_pdf()
-        # send mail using template
-        template = self.env.ref('ojt_batch_management.email_template_certificate', False)
+
+        self.write({
+            'state': 'issued',
+            'issue_date': date.today(),
+        })
+
+        # Generate and attach PDF
+        try:
+            attachment = self.generate_pdf()
+        except Exception as e:
+            raise UserError(
+                "Failed to generate certificate PDF.\n\n"
+                f"{str(e)}\n\n"
+                "Please check that:\n"
+                "1. Report XML ID exists (e.g. ojt_batch_management.action_report_certificate)\n"
+                "2. Report template is valid (no XML errors)\n"
+                "3. Report model is set to 'ojt.certificate'"
+            )
+
+        # Send email
+        template = self.env.ref('ojt_batch_management.email_template_certificate', raise_if_not_found=False)
         if template:
-            # prepare email values
-            mail_values = template.generate_email(self.id)
-            # create mail.mail
-            mail = self.env['mail.mail'].create(mail_values)
-            # attach generated attachment
-            if attachment:
-                mail.write({'attachment_ids': [(4, attachment.id)]})
             try:
+                mail_values = template.generate_email(self.id)
+                mail = self.env['mail.mail'].create(mail_values)
+
+                if attachment:
+                    mail.write({'attachment_ids': [(4, attachment.id)]})
+
                 mail.send()
-            except Exception:
-                # if sending fails, just log the message and continue
-                _logger = self.env['ir.logging']
-                _logger.sudo().create({
+            except Exception as e:
+                # Log but continue
+                self.env['ir.logging'].sudo().create({
                     'name': 'ojt_batch_management',
                     'type': 'server',
                     'dbname': self.env.cr.dbname,
                     'level': 'ERROR',
-                    'message': 'Failed to send certificate email for %s' % (self.id),
+                    'message': f'Failed to send certificate email for record {self.id}: {str(e)}',
                     'path': 'ojt_certificate.action_issue',
                     'line': '0',
                     'func': 'action_issue',
                 })
-        return True
+                return {
+                    'type': 'ir.actions.client',
+                    'tag': 'display_notification',
+                    'params': {
+                        'title': _('Certificate Issued'),
+                        'message': _('Certificate generated successfully, but email could not be sent.'),
+                        'type': 'warning',
+                        'sticky': False,
+                    }
+                }
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Certificate Issued'),
+                'message': _('Certificate has been successfully generated and issued.'),
+                'type': 'success',
+                'sticky': False,
+            }
+        }
