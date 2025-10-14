@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <!-- Assignment Tree View -->
+        <!-- Assignment List View -->
         <record id="view_ojt_assignment_tree" model="ir.ui.view">
             <field name="name">ojt.assignment.tree</field>
             <field name="model">ojt.assignment</field>
@@ -126,16 +126,6 @@
             </field>
         </record>
 
-        <!-- Assignment Action -->
-        <record id="action_ojt_assignment" model="ir.actions.act_window">
-            <field name="name">Assignments</field>
-            <field name="res_model">ojt.assignment</field>
-            <field name="view_mode">tree,kanban,form</field>
-            <field name="help">Create and manage OJT assignments</field>
-        </record>
 
-        <!-- Assignment Menu -->
-        <menuitem id="menu_ojt_assignment" name="Assignments" parent="menu_ojt_root"
-                  action="action_ojt_assignment" sequence="30"/>
     </data>
 </odoo>

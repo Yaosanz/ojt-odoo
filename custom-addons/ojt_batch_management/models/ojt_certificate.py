@@ -1,5 +1,7 @@
 import uuid
 import base64
+import io
+import qrcode
 from datetime import date
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
@@ -53,9 +55,28 @@ class OjtCertificate(models.Model):
     ], string="Status", default='draft')
 
     serial = fields.Char(string="Serial Number", readonly=True)
-    attendance_rate = fields.Float(string="Attendance Rate", readonly=True)
-    final_score = fields.Float(string="Final Score", readonly=True)
-    grade = fields.Char(string="Grade", readonly=True)
+    attendance_rate = fields.Float(
+        string="Attendance Rate",
+        compute='_compute_participant_values',
+        store=False,
+        readonly=True)
+    final_score = fields.Float(
+        string="Final Score",
+        compute='_compute_participant_values',
+        store=False,
+        readonly=True)
+    grade = fields.Char(
+        string="Grade",
+        compute='_compute_participant_values',
+        store=False,
+        readonly=True)
+    @api.depends('participant_id.attendance_rate', 'participant_id.score_final')
+    def _compute_participant_values(self):
+        for record in self:
+            record.attendance_rate = record.participant_id.attendance_rate or 0.0
+            record.final_score = record.participant_id.score_final or 0.0
+            record.grade = record._compute_grade(record.final_score)
+    qr_code_image = fields.Binary(string="QR Code", compute="_compute_qr_code", store=True)
 
     _sql_constraints = [
         ('unique_certificate_per_participant', 'unique(participant_id)',
@@ -75,45 +96,52 @@ class OjtCertificate(models.Model):
     # ----------------------------------------------------------
     # PDF GENERATION
     # ----------------------------------------------------------
+
     def generate_pdf(self):
         """Generate certificate PDF and attach it to the record"""
         self.ensure_one()
 
-        # Try multiple possible report references
-        report = None
-        possible_refs = [
-            'ojt_batch_management.action_report_certificate',
-            'ojt_batch_management.report_certificate',
-            'ojt_batch_management.report_ojt_certificate',
-        ]
-
-        for ref in possible_refs:
-            report = self.env.ref(ref, raise_if_not_found=False)
-            if report:
-                break
-
-        # Fallback search by model if no explicit XML ID found
-        if not report:
+        try:
+            # Try to get report by XML ID first
+            report = self.env.ref('ojt_batch_management.action_report_certificate')
+        except ValueError:
+            # Fallback: search for report directly
             report = self.env['ir.actions.report'].search([
-                ('model', '=', 'ojt.certificate'),
-                ('report_type', '=', 'qweb-pdf')
+                ('report_name', '=', 'ojt_batch_management.report_certificate_template'),
+                ('model', '=', 'ojt.certificate')
             ], limit=1)
 
         if not report:
             raise UserError(_(
-                "Certificate report not found.\n\n"
-                "Please ensure a report for model 'ojt.certificate' exists in XML.\n"
-                "Expected XML ID: 'ojt_batch_management.action_report_certificate'"
+                "Certificate report action not found.\n\n"
+                "Please ensure the report action and template exist and are properly configured.\n"
+                "Expected report name: 'ojt_batch_management.report_certificate_template'"
             ))
 
-        # ✅ Correct call: pass recordset, not list
+        # Generate PDF content
         try:
-            pdf_content, _ = report._render_qweb_pdf(self)
+            # Get report context
+            data = {
+                'model': 'ojt.certificate',
+                'ids': [self.id],
+                'form': self.read()[0]
+            }
+            # Generate PDF with proper context
+            pdf_content, _ = report.with_context(active_model='ojt.certificate')._render_qweb_pdf(self.ids, data=data)
+            
         except Exception as e:
-            raise UserError(_("Failed to render certificate PDF.\n\nError: %s") % str(e))
+            raise UserError(_(
+                "Failed to generate certificate PDF.\n\n"
+                "Error: %s\n\n"
+                "Please verify that:\n"
+                "1. The report template exists and is valid\n"
+                "2. All required fields are properly set\n"
+                "3. The report model matches the certificate model"
+            ) % str(e))
 
+        # Encode PDF content
         pdf_base64 = base64.b64encode(pdf_content).decode('utf-8')
-        filename = f"{self.name}.pdf"
+        filename = f"Certificate_{self.name}.pdf"
 
         # Write PDF into record
         self.write({
@@ -156,14 +184,7 @@ class OjtCertificate(models.Model):
         try:
             attachment = self.generate_pdf()
         except Exception as e:
-            raise UserError(_(
-                "Failed to generate certificate PDF.\n\n"
-                "%s\n\n"
-                "Please check that:\n"
-                "1. Report XML ID exists (e.g. ojt_batch_management.action_report_certificate)\n"
-                "2. Report template is valid (no XML errors)\n"
-                "3. Report model is set to 'ojt.certificate'"
-            ) % str(e))
+            raise UserError("Failed to generate certificate PDF.\n\n%s\n\nPlease check that:\n1. Report XML ID exists (e.g. ojt_batch_management.action_report_certificate)\n2. Report template is valid (no XML errors)\n3. Report model is set to 'ojt.certificate'" % str(e))
 
         # Send email if template exists
         template = self.env.ref('ojt_batch_management.email_template_certificate', raise_if_not_found=False)
@@ -221,3 +242,50 @@ class OjtCertificate(models.Model):
         elif score >= 60:
             return 'D'
         return 'F'
+
+    # ----------------------------------------------------------
+    # QR CODE COMPUTATION
+    # ----------------------------------------------------------
+    @api.depends('serial')
+    def _compute_qr_code(self):
+        """Generate QR code image for certificate verification"""
+        for record in self:
+            if record.serial:
+                # Generate QR code containing verification URL
+                qr = qrcode.QRCode(
+                    version=1,
+                    error_correction=qrcode.constants.ERROR_CORRECT_L,
+                    box_size=10,
+                    border=4,
+                )
+                qr.add_data(f"/ojt/cert/verify?serial={record.serial}")
+                qr.make(fit=True)
+
+                img = qr.make_image(fill_color="black", back_color="white")
+                buffer = io.BytesIO()
+                img.save(buffer, format="PNG")
+                record.qr_code_image = base64.b64encode(buffer.getvalue()).decode('utf-8')
+            else:
+                record.qr_code_image = False
+
+    # ----------------------------------------------------------
+    # CERTIFICATE VERIFICATION
+    # ----------------------------------------------------------
+    @api.model
+    def verify_certificate(self, serial):
+        """Verify certificate authenticity using serial number"""
+        certificate = self.search([('serial', '=', serial)], limit=1)
+        if certificate and certificate.state == 'issued':
+            return {
+                'valid': True,
+                'certificate_no': certificate.name,
+                'participant_name': certificate.participant_id.name,
+                'batch': certificate.batch_id.name,
+                'issue_date': certificate.issued_on or certificate.issue_date,
+                'grade': certificate.grade,
+                'serial': certificate.serial,
+            }
+        return {
+            'valid': False,
+            'reason': _('Certificate not found or not issued.')
+        }

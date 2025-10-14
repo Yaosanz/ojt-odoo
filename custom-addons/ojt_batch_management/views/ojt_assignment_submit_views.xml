@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <!-- Assignment Submit Tree View -->
+        <!-- Assignment Submit List View -->
         <record id="view_ojt_assignment_submit_tree" model="ir.ui.view">
             <field name="name">ojt.assignment.submit.tree</field>
             <field name="model">ojt.assignment.submit</field>
@@ -34,11 +34,11 @@
                     </header>
                     <sheet>
                         <div class="oe_title">
-                            <h1>
-                                <field name="assignment_id" readonly="1"/>
-                                <span> - </span>
-                                <field name="participant_id" readonly="1"/>
-                            </h1>
+                                <h1>
+                                    <field name="assignment_id"/>
+                                    <span> - </span>
+                                    <field name="participant_id"/>
+                                </h1>
                         </div>
                         <group>
                             <group>
@@ -70,16 +70,5 @@
             </field>
         </record>
 
-        <!-- Assignment Submit Action -->
-        <record id="action_ojt_assignment_submit" model="ir.actions.act_window">
-            <field name="name">Assignment Submissions</field>
-            <field name="res_model">ojt.assignment.submit</field>
-            <field name="view_mode">tree,form</field>
-            <field name="help">Review assignment submissions</field>
-        </record>
-
-        <!-- Assignment Submit Menu -->
-        <menuitem id="menu_ojt_assignment_submit" name="Submissions" parent="menu_ojt_root"
-                  action="action_ojt_assignment_submit" sequence="35"/>
     </data>
 </odoo>

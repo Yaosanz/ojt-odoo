@@ -199,7 +199,11 @@
 - [x] final_score: Float [store]
 - [x] grade: Char [compute] - Grade (A/B/C)
 - [x] qr_token: Char [unique, index] - Verification token
+- [x] qr_code_image: Binary [compute] - QR code image for PDF embedding
 - [x] pdf_file: Binary - Certificate PDF
+- [x] _compute_qr_code method added to generate QR code image
+- [x] Updated certificate template to use qr_code_image instead of qr_token
+- [x] Updated verification controller to use serial parameter only
 - [x] pdf_filename: Char
 - [x] state: Selection [('draft','Draft'),('issued','Issued'),('revoked','Revoked')] [default='draft']
 - [x] notes: Text
@@ -288,4 +292,3 @@
 - [ ] Meeting Attendance Integration (Graph API/Zoom/Meet)
 - [ ] Gamification (badges/points)
 - [ ] Proctoring for final quizzes
-- [ ] Public API v1 for verification and graduates list

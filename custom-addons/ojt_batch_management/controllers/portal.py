@@ -8,11 +8,23 @@ class OjtPortal(http.Controller):
 
     @http.route(['/my/ojt'], type='http', auth="user", website=True)
     def portal_my_ojt(self, **kw):
-        participants = request.env['ojt.participant'].sudo().search([
+        participant = request.env['ojt.participant'].sudo().search([
             ('user_id', '=', request.env.user.id)
+        ], limit=1)
+        certificates = request.env['ojt.certificate'].sudo().search([
+            ('participant_id.user_id', '=', request.env.user.id)
         ])
-        return request.render('ojt_batch_management.portal_my_ojt', {
-            'participants': participants,
+        assignments = request.env['ojt.assignment.submit'].sudo().search([
+            ('participant_id.user_id', '=', request.env.user.id)
+        ])
+        progress_records = request.env['ojt.progress'].sudo().search([
+            ('participant_id.user_id', '=', request.env.user.id)
+        ])
+        return request.render('ojt_batch_management.portal_ojt_dashboard', {
+            'participant': participant,
+            'certificates': certificates,
+            'assignments': assignments,
+            'progress_records': progress_records,
         })
 
     @http.route(['/my/ojt/certificate/<int:cert_id>/download'], type='http', auth="user", website=True)

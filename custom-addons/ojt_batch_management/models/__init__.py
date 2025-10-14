@@ -6,4 +6,6 @@ from . import ojt_participant
 from . import ojt_attendance
 from . import ojt_progress
 from . import ojt_certificate
-
+from . import ojt_meeting_attendance
+from . import ojt_gamification
+from . import ojt_proctoring

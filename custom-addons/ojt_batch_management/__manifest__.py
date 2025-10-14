@@ -21,11 +21,13 @@
     'data': [
         # Security must come FIRST
         'security/ojt_security.xml',
+        'security/ojt_security_rules.xml',
         'security/ir.model.access.csv',
         
         # Data files
         'data/ojt_sequence.xml',
         'data/email_template_certificate.xml',
+        'data/email_template_proctoring_scheduled.xml',
         
         # Reports
         'report/report_certificate.xml',
@@ -48,6 +50,11 @@
         'views/ojt_assignment_submit_views.xml',
         'views/ojt_event_link_views.xml',
         
+        # New feature views
+        'views/ojt_meeting_attendance_views.xml',
+        'views/ojt_gamification_views.xml',
+        'views/ojt_proctoring_views.xml',
+
         # Portal templates last
         'views/certificate_verify_templates.xml',
         'views/portal/ojt_portal_templates.xml',

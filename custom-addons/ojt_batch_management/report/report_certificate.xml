@@ -1,12 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <report
-        id="action_report_certificate"
-        model="ojt.certificate"
-        string="Certificate"
-        report_type="qweb-pdf"
-        name="ojt_batch_management.report_certificate_template"
-        file="ojt_batch_management.report_certificate_template"
-        print_report_name="'Certificate - %s' % (object.name)"
-    />
+    <template id="report_certificate_document">
+        <t t-call="web.html_container">
+            <t t-call="web.external_layout">
+                <div class="page" style="border: 5px solid #007bff; padding: 20px; margin: 20px;">
+                    <!-- Certificate content -->
+                    <div style="text-align: center;">
+                        <h1 style="color: #007bff; margin-bottom: 30px;">Certificate of Completion</h1>
+                        <p>This certifies that</p>
+                        <h2 style="margin: 20px 0;"><t t-esc="o.participant_id.name"/></h2>
+                        <p>has successfully completed the</p>
+                        <h3 style="margin: 20px 0;"><t t-esc="o.batch_id.name"/></h3>
+                        <p>with the following achievements:</p>
+                        
+                        <div class="mt-4">
+                            <p><strong>Attendance Rate:</strong> <t t-esc="'%.1f' % o.attendance_rate"/>%</p>
+                            <p><strong>Final Score:</strong> <t t-esc="'%.1f' % o.final_score"/>%</p>
+                            <p><strong>Grade:</strong> <t t-esc="o.grade"/></p>
+                        </div>
+                        
+                        <div class="mt-5">
+                            <p><strong>Certificate No:</strong> <t t-esc="o.name"/></p>
+                            <p><strong>Issue Date:</strong> <t t-esc="o.issued_on"/></p>
+                        </div>
+
+                        <!-- QR Code if available -->
+                        <div t-if="o.qr_code_image" class="mt-4">
+                            <img t-att-src="'data:image/png;base64,%s' % o.qr_code_image" style="max-width: 150px;"/>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_certificate_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="ojt_batch_management.report_certificate_document"/>
+            </t>
+        </t>
+    </template>
 </odoo>

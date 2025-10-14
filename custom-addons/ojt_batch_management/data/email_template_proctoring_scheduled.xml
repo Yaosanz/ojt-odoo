@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="email_template_proctoring_scheduled" model="mail.template">
+        <field name="name">OJT Proctoring Scheduled</field>
+        <field name="model_id" ref="ojt_batch_management.model_ojt_quiz_proctoring"/>
+        <field name="subject">OJT Quiz Proctoring Scheduled: ${object.name}</field>
+        <field name="email_from">${(user.email or 'noreply@yourdomain.com')|safe}</field>
+        <field name="email_to">${object.proctor_id.email|safe}</field>
+        <field name="body_html"><![CDATA[
+            <p>Hello ${object.proctor_id.name},</p>
+            <p>Your proctoring session <b>${object.name}</b> for batch <b>${object.batch_id.name}</b> has been scheduled.</p>
+            <p>Start Time: ${object.start_time}<br/>
+            End Time: ${object.end_time}</p>
+            <p>Participants: ${', '.join([p.name for p in object.participant_ids])}</p>
+            <p>Thank you.</p>
+        ]]></field>
+        <field name="auto_delete" eval="True"/>
+    </record>
+</odoo>

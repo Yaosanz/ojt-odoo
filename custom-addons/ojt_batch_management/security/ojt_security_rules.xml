@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Meeting Attendance Record Rules -->
+    <record id="rule_ojt_meeting_attendance_global" model="ir.rule">
+        <field name="name">OJT Meeting Attendance: Multi-company rule</field>
+        <field name="model_id" ref="model_ojt_meeting_attendance"/>
+        <field name="domain_force">[('event_link_id.batch_id.company_id', 'in', company_ids)]</field>
+        <field name="global" eval="True"/>
+    </record>
+
+    <record id="rule_ojt_meeting_attendance_proctor" model="ir.rule">
+        <field name="name">OJT Meeting Attendance: Proctors see assigned meetings</field>
+        <field name="model_id" ref="model_ojt_meeting_attendance"/>
+        <field name="domain_force">[('proctor_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <!-- Gamification Record Rules -->
+    <record id="rule_ojt_badge_award_participant" model="ir.rule">
+        <field name="name">OJT Badge Awards: Participants see own badges</field>
+        <field name="model_id" ref="model_ojt_badge_award"/>
+        <field name="domain_force">[('participant_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+    </record>
+
+    <!-- Proctoring Record Rules -->
+
+    <record id="rule_ojt_quiz_proctoring_create" model="ir.rule">
+        <field name="name">OJT Quiz Proctoring: Allow create</field>
+        <field name="model_id" ref="model_ojt_quiz_proctoring"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_read" eval="False"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+    <record id="rule_ojt_quiz_proctoring_proctor" model="ir.rule">
+        <field name="name">OJT Quiz Proctoring: Proctors see assigned sessions</field>
+        <field name="model_id" ref="model_ojt_quiz_proctoring"/>
+        <field name="domain_force">[('proctor_id', '=', user.id)]</field>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+
+    <record id="rule_ojt_proctoring_log_proctor" model="ir.rule">
+        <field name="name">OJT Proctoring Logs: Proctors see assigned session logs</field>
+        <field name="model_id" ref="model_ojt_proctoring_log"/>
+        <field name="domain_force">[('session_id.proctor_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+</odoo>

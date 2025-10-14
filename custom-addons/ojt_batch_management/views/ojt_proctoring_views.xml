@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Quiz Proctoring Tree View -->
+    <record id="view_ojt_quiz_proctoring_list" model="ir.ui.view">
+        <field name="name">ojt.quiz.proctoring.list</field>
+        <field name="model">ojt.quiz.proctoring</field>
+        <field name="arch" type="xml">
+            <list string="Quiz Proctoring" decoration-info="state == 'scheduled'" decoration-success="state == 'completed'" decoration-warning="state == 'ongoing'">
+                <field name="name"/>
+                <field name="survey_id"/>
+                <field name="batch_id"/>
+                <field name="start_time"/>
+                <field name="duration"/>
+                <field name="proctor_id"/>
+                <field name="state"/>
+                <field name="violation_count"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Quiz Proctoring Form View -->
+    <record id="view_ojt_quiz_proctoring_form" model="ir.ui.view">
+        <field name="name">ojt.quiz.proctoring.form</field>
+        <field name="model">ojt.quiz.proctoring</field>
+        <field name="arch" type="xml">
+            <form string="Quiz Proctoring">
+                <header>
+                    <button name="action_schedule" string="Schedule" type="object" class="oe_highlight" modifiers="{'invisible': [['state', '!=', 'draft']]}"/>
+                    <button name="action_start" string="Start Session" type="object" class="oe_highlight" modifiers="{'invisible': [['state', '!=', 'scheduled']]}"/>
+                    <button name="action_end" string="End Session" type="object" class="oe_highlight" modifiers="{'invisible': [['state', '!=', 'ongoing']]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,scheduled,ongoing,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="%(survey.action_survey_user_input)d"
+                            type="action"
+                            class="oe_stat_button"
+                            icon="fa-list-alt"
+                            context="{'search_default_survey_id': survey_id}"
+                            modifiers="{'invisible': [['state', 'in', ['draft', 'scheduled']]]}">
+                            <field name="violation_count" string="Violations" widget="statinfo"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Session Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="survey_id"/>
+                            <field name="batch_id"/>
+                            <field name="proctor_id"/>
+                            <field name="duration"/>
+                        </group>
+                        <group>
+                            <field name="start_time"/>
+                            <field name="end_time"/>
+                            <field name="proctoring_settings"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Participants">
+                            <field name="participant_ids"/>
+                        </page>
+                        <page string="Proctoring Settings">
+                            <group>
+                                <group>
+                                    <field name="webcam_required"/>
+                                    <field name="screenshot_interval"/>
+                                </group>
+                                <group>
+                                    <field name="browser_lock"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Session Logs">
+                            <field name="session_logs">
+                                <list>
+                                    <field name="timestamp"/>
+                                    <field name="participant_id"/>
+                                    <field name="event_type"/>
+                                    <field name="violation_type"/>
+                                    <field name="details"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Quiz Proctoring Search View -->
+    <record id="view_ojt_quiz_proctoring_search" model="ir.ui.view">
+        <field name="name">ojt.quiz.proctoring.search</field>
+        <field name="model">ojt.quiz.proctoring</field>
+        <field name="arch" type="xml">
+            <search string="Search Quiz Proctoring">
+                <field name="name"/>
+                <field name="survey_id"/>
+                <field name="batch_id"/>
+                <field name="proctor_id"/>
+                <separator/>
+                <filter string="Scheduled" name="scheduled" domain="[('state', '=', 'scheduled')]"/>
+                <filter string="Ongoing" name="ongoing" domain="[('state', '=', 'ongoing')]"/>
+                <filter string="Completed" name="completed" domain="[('state', '=', 'completed')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Status" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Batch" name="group_batch" context="{'group_by': 'batch_id'}"/>
+                    <filter string="Proctor" name="group_proctor" context="{'group_by': 'proctor_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Quiz Proctoring Action -->
+    <record id="action_ojt_quiz_proctoring" model="ir.actions.act_window">
+        <field name="name">Quiz Proctoring</field>
+        <field name="res_model">ojt.quiz.proctoring</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="view_ojt_quiz_proctoring_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first proctored quiz session!
+            </p>
+            <p>
+                Monitor and supervise online quizzes with advanced proctoring features.
+            </p>
+        </field>
+    </record>
+
+    <!-- Proctoring Menu -->
+    <menuitem id="menu_ojt_proctoring"
+        name="Quiz Proctoring"
+        parent="menu_ojt_root"
+        sequence="45"/>
+
+    <menuitem id="menu_ojt_quiz_proctoring"
+        name="Proctored Sessions"
+        parent="menu_ojt_proctoring"
+        action="action_ojt_quiz_proctoring"
+        sequence="10"/>
+</odoo>

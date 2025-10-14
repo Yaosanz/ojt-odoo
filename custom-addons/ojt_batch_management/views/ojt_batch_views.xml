@@ -123,6 +123,24 @@
                     <field name="state" widget="statusbar" statusbar_visible="draft,recruit,ongoing,done,cancel"/>
                 </header>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_scheduled" type="object"
+                                class="oe_stat_button" icon="fa-clock-o">
+                            <field name="scheduled_count" widget="statinfo" string="Scheduled"/>
+                        </button>
+                        <button name="action_view_ongoing" type="object"
+                                class="oe_stat_button" icon="fa-play">
+                            <field name="ongoing_count" widget="statinfo" string="Ongoing"/>
+                        </button>
+                        <button name="action_view_completed" type="object"
+                                class="oe_stat_button" icon="fa-check">
+                            <field name="completed_count" widget="statinfo" string="Completed"/>
+                        </button>
+                        <button name="action_view_cancelled" type="object"
+                                class="oe_stat_button" icon="fa-times">
+                            <field name="cancelled_count" widget="statinfo" string="Cancelled"/>
+                        </button>
+                    </div>
                     <div class="oe_title">
                         <h1>
                             <field name="name" placeholder="Batch Name"/>
@@ -135,6 +153,7 @@
                         <group string="Basic Information">
                             <field name="job_id"/>
                             <field name="department_id"/>
+                            <field name="employee_id"/>
                             <field name="mentor_ids" widget="many2many_tags"/>
                             <field name="mode"/>
                             <field name="capacity"/>

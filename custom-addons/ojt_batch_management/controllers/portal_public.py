@@ -10,38 +10,37 @@ class OjtPortalPublic(http.Controller):
     def certificate_verify(self, **kwargs):
         """Public certificate verification page"""
         serial = kwargs.get('serial', '').strip()
-        qr_token = kwargs.get('qr', '').strip()
+        error_param = kwargs.get('error', '')
 
         certificate = None
         error_message = None
 
-        if serial:
-            certificate = request.env['ojt.certificate'].sudo().search([
-                ('serial', '=', serial),
-                ('state', '=', 'issued')
-            ], limit=1)
-            if not certificate:
+        if error_param == 'invalid_qr':
+            error_message = "Invalid QR code. Certificate not found."
+        elif serial:
+            # Use the new verify_certificate method
+            result = request.env['ojt.certificate'].sudo().verify_certificate(serial)
+            if result['valid']:
+                certificate = request.env['ojt.certificate'].sudo().search([
+                    ('serial', '=', serial),
+                    ('state', '=', 'issued')
+                ], limit=1)
+            else:
                 error_message = "Certificate not found or not issued."
-
-        elif qr_token:
-            certificate = request.env['ojt.certificate'].sudo().search([
-                ('qr_token', '=', qr_token),
-                ('state', '=', 'issued')
-            ], limit=1)
-            if not certificate:
-                error_message = "Invalid QR code or certificate not issued."
 
         return request.render('ojt_batch_management.certificate_verify', {
             'certificate': certificate,
             'error_message': error_message,
             'serial': serial,
-            'qr_token': qr_token,
         })
 
     @http.route('/ojt/cert/qr/<string:qr_token>', type='http', auth='public', website=True)
     def certificate_qr_redirect(self, qr_token):
         """Redirect QR code scans to verification page"""
-        return request.redirect(f'/ojt/cert/verify?qr={qr_token}')
+        certificate = request.env['ojt.certificate'].sudo().search([('qr_token', '=', qr_token)], limit=1)
+        if certificate and certificate.state == 'issued':
+            return request.redirect(f'/ojt/cert/verify?serial={certificate.serial}')
+        return request.redirect('/ojt/cert/verify?error=invalid_qr')
 
     @http.route('/ojt/attend/checkin', type='http', auth='public', methods=['GET', 'POST'], website=True)
     def attendance_checkin(self, **kwargs):

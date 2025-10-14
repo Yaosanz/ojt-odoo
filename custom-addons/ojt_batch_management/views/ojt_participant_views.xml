@@ -7,7 +7,7 @@
         <field name="help">Manage OJT participants</field>
     </record>
 
-    <!-- Tree View -->
+    <!-- List View -->
     <record id="view_ojt_participant_tree" model="ir.ui.view">
         <field name="name">ojt.participant.tree</field>
         <field name="model">ojt.participant</field>

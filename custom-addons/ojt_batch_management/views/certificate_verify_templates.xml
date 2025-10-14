@@ -35,6 +35,7 @@
                                                 <div class="row">
                                                     <div class="col-md-6">
                                                         <h6>Certificate Details</h6>
+                                                        <p><strong>Certificate No:</strong> <t t-esc="certificate.name"/></p>
                                                         <p><strong>Serial:</strong> <t t-esc="certificate.serial"/></p>
                                                         <p><strong>Participant:</strong> <t t-esc="certificate.participant_id.name"/></p>
                                                         <p><strong>Batch:</strong> <t t-esc="certificate.batch_id.name"/></p>

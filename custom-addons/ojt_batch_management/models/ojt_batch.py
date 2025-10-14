@@ -15,6 +15,7 @@ class OjtBatch(models.Model):
     job_id = fields.Many2one('hr.job', string='Related Job Position', tracking=True)
     description = fields.Html(string='Description')
     department_id = fields.Many2one('hr.department', string='Department', tracking=True)
+    employee_id = fields.Char(string='ID Pegawai')
     mentor_ids = fields.Many2many('res.partner', 'ojt_batch_mentor_rel',
                                   string='Mentors/Instructors', tracking=True)
 
@@ -55,6 +56,12 @@ class OjtBatch(models.Model):
     participant_count = fields.Integer(compute='_compute_counts', store=True)
     assignment_count = fields.Integer(compute='_compute_counts', store=True)
     event_count = fields.Integer(compute='_compute_counts', store=True)
+    
+    # Smart button counters
+    scheduled_count = fields.Integer(compute='_compute_state_counts', store=True)
+    ongoing_count = fields.Integer(compute='_compute_state_counts', store=True)
+    completed_count = fields.Integer(compute='_compute_state_counts', store=True)
+    cancelled_count = fields.Integer(compute='_compute_state_counts', store=True)
 
     def _compute_counts(self):
         for record in self:
@@ -62,6 +69,15 @@ class OjtBatch(models.Model):
             assignments = self.env['ojt.assignment'].search([('batch_id', '=', record.id)])
             record.assignment_count = len(assignments)
             record.event_count = len(record.event_link_ids)
+            
+    @api.depends('participant_ids.state')
+    def _compute_state_counts(self):
+        for record in self:
+            participants = record.participant_ids
+            record.scheduled_count = len(participants.filtered(lambda p: p.state == 'draft'))
+            record.ongoing_count = len(participants.filtered(lambda p: p.state == 'ongoing'))
+            record.completed_count = len(participants.filtered(lambda p: p.state == 'completed'))
+            record.cancelled_count = len(participants.filtered(lambda p: p.state in ['failed', 'left']))
 
     def _compute_progress_ratio(self):
         for record in self:
@@ -136,3 +152,47 @@ class OjtBatch(models.Model):
             ('end_date', '<', today)
         ])
         ongoing_batches.action_done()
+
+    def action_view_scheduled(self):
+        """Smart button action to view scheduled participants"""
+        return {
+            'name': 'Scheduled Participants',
+            'type': 'ir.actions.act_window',
+            'res_model': 'ojt.participant',
+            'view_mode': 'kanban,list,form',
+            'domain': [('batch_id', '=', self.id), ('state', '=', 'draft')],
+            'context': {'default_batch_id': self.id}
+        }
+
+    def action_view_ongoing(self):
+        """Smart button action to view ongoing participants"""
+        return {
+            'name': 'Ongoing Participants',
+            'type': 'ir.actions.act_window',
+            'res_model': 'ojt.participant',
+            'view_mode': 'kanban,list,form',
+            'domain': [('batch_id', '=', self.id), ('state', '=', 'ongoing')],
+            'context': {'default_batch_id': self.id}
+        }
+
+    def action_view_completed(self):
+        """Smart button action to view completed participants"""
+        return {
+            'name': 'Completed Participants',
+            'type': 'ir.actions.act_window',
+            'res_model': 'ojt.participant',
+            'view_mode': 'kanban,list,form',
+            'domain': [('batch_id', '=', self.id), ('state', '=', 'completed')],
+            'context': {'default_batch_id': self.id}
+        }
+
+    def action_view_cancelled(self):
+        """Smart button action to view cancelled participants"""
+        return {
+            'name': 'Cancelled Participants',
+            'type': 'ir.actions.act_window',
+            'res_model': 'ojt.participant',
+            'view_mode': 'kanban,list,form',
+            'domain': [('batch_id', '=', self.id), ('state', 'in', ['failed', 'left'])],
+            'context': {'default_batch_id': self.id}
+        }
