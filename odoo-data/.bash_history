@@ -42,3 +42,8 @@ psql -h db -U odoo -d odoo -c "SELECT version();"
 psql -h db -U odoo -d odoo
 \q
 exit
+ping -c 4 8.8.8.8
+ping -c 4 smtp.gmail.com
+apt update && apt install -y inetutils-ping dnsutils telnet
+sudo apt update && sudo apt install -y inetutils-ping dnsutils telnet
+exit

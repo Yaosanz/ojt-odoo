@@ -152,6 +152,7 @@
                     <group>
                         <group string="Basic Information">
                             <field name="job_id"/>
+                            <field name="ojt_batch_ids" widget="many2many_tags" readonly="1"/>
                             <field name="department_id"/>
                             <field name="employee_id"/>
                             <field name="mentor_ids" widget="many2many_tags"/>

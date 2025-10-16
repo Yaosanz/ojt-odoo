@@ -13,6 +13,7 @@ class OjtBatch(models.Model):
     code = fields.Char(string="Batch Code", required=True, copy=False, readonly=True,
                        default=lambda self: _('New'), tracking=True)
     job_id = fields.Many2one('hr.job', string='Related Job Position', tracking=True)
+    ojt_batch_ids = fields.One2many('hr.applicant', 'ojt_batch_id', string='Applications')
     description = fields.Html(string='Description')
     department_id = fields.Many2one('hr.department', string='Department', tracking=True)
     employee_id = fields.Char(string='ID Pegawai')
@@ -51,6 +52,11 @@ class OjtBatch(models.Model):
     company_id = fields.Many2one('res.company', string='Company', required=True,
                                  default=lambda self: self.env.company)
     active = fields.Boolean(default=True)
+    qr_token = fields.Char(string='QR Token', unique=True, index=True)
+
+    _sql_constraints = [
+        ('unique_qr_token', 'unique(qr_token)', 'QR Token must be unique!'),
+    ]
 
     # Computed fields
     participant_count = fields.Integer(compute='_compute_counts', store=True)
@@ -120,21 +126,73 @@ class OjtBatch(models.Model):
         self.write({'state': 'cancel'})
 
     def action_generate_certificates(self):
-        """Wizard action to generate certificates for eligible participants"""
+        """Generate certificates for eligible participants"""
         eligible = self.participant_ids.filtered(
             lambda p: p.attendance_rate >= self.certificate_rule_attendance
             and p.score_final >= self.certificate_rule_score
             and p.state == 'completed'
         )
+
+        if not eligible:
+            raise ValidationError(_('No eligible participants found for certificate generation.'))
+
         certificates = []
         for participant in eligible:
+            # Check if certificate already exists
+            existing_cert = self.env['ojt.certificate'].search([
+                ('participant_id', '=', participant.id)
+            ], limit=1)
+
+            if existing_cert:
+                continue  # Skip if certificate already exists
+
+            # Create certificate
             cert_vals = {
                 'participant_id': participant.id,
                 'qr_token': str(uuid.uuid4()),
-                'state': 'issued',
+                'state': 'draft',  # Start as draft, then issue
             }
-            certificates.append(self.env['ojt.certificate'].create(cert_vals))
-        return certificates
+            certificate = self.env['ojt.certificate'].create(cert_vals)
+
+            # Issue the certificate (generate PDF and send email)
+            try:
+                certificate.action_issue()
+                certificates.append(certificate)
+            except Exception as e:
+                # Log error but continue with other certificates
+                self.env['ir.logging'].sudo().create({
+                    'name': 'ojt_batch_management',
+                    'type': 'server',
+                    'dbname': self.env.cr.dbname,
+                    'level': 'ERROR',
+                    'message': f'Failed to generate certificate for participant {participant.name}: {str(e)}',
+                    'path': 'ojt_batch.action_generate_certificates',
+                    'line': '0',
+                    'func': 'action_generate_certificates',
+                })
+
+        if certificates:
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('Certificates Generated'),
+                    'message': _('Successfully generated %d certificates.') % len(certificates),
+                    'type': 'success',
+                    'sticky': False,
+                }
+            }
+        else:
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('No Certificates Generated'),
+                    'message': _('All eligible participants already have certificates or generation failed.'),
+                    'type': 'warning',
+                    'sticky': False,
+                }
+            }
 
     def action_auto_state_transition(self):
         """Cron job to auto-transition batch states based on dates"""

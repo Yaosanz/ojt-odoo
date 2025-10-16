@@ -1,0 +1,531 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- OJT Jobs Listing Template -->
+        <template id="ojt_jobs" name="OJT Jobs">
+            <t t-call="website.layout">
+                <div id="wrap" class="oe_structure oe_empty">
+                    <section class="s_title pt32 pb32 bg-beta">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-lg-8 offset-lg-2 text-center">
+                                    <h1 class="s_title_default">
+                                        <span class="o_default_snippet_text">OJT Programs</span>
+                                    </h1>
+                                    <p class="s_title_text lead">
+                                        Join our On-the-Job Training programs and kickstart your career
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="s_text_block pt32 pb32">
+                        <div class="container">
+                            <div class="row">
+                                <t t-foreach="jobs" t-as="job">
+                                    <div class="col-lg-6 col-xl-4 mb-4">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <h5 class="card-title">
+                                                    <a t-attf-href="/ojt/jobs/{{ slug(job) }}" class="text-decoration-none">
+                                                        <t t-esc="job.name"/>
+                                                    </a>
+                                                </h5>
+                                                <p class="card-text text-muted">
+                                                    <t t-esc="job.department_id.name or 'General'"/>
+                                                </p>
+                                                <div class="mb-2">
+                                                    <small class="text-muted">
+                                                        <i class="fa fa-map-marker"/> <t t-esc="job.address_id.city or 'Remote'"/>
+                                                    </small>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <small class="text-muted">
+                                                        <i class="fa fa-clock-o"/> <t t-esc="job.contract_type_id.name or 'Full Time'"/>
+                                                    </small>
+                                                </div>
+                                            </div>
+                                            <div class="card-footer bg-transparent">
+                                                <a t-attf-href="/ojt/jobs/{{ slug(job) }}" class="btn btn-primary btn-sm">
+                                                    View Details &amp; Apply
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </t>
+        </template>
+
+        <!-- OJT Job Detail Template -->
+        <template id="ojt_job_detail" name="OJT Job Detail">
+            <t t-call="website.layout">
+                <div id="wrap" class="oe_structure oe_empty">
+                    <section class="s_title pt32 pb32 bg-beta">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-lg-8 offset-lg-2">
+                                    <h1 class="s_title_default">
+                                        <t t-esc="job.name"/>
+                                    </h1>
+                                    <div class="d-flex flex-wrap gap-3 mb-3">
+                                        <span class="badge bg-primary">
+                                            <i class="fa fa-building"/> <t t-esc="job.department_id.name or 'General'"/>
+                                        </span>
+                                        <span class="badge bg-secondary">
+                                            <i class="fa fa-map-marker"/> <t t-esc="job.address_id.city or 'Remote'"/>
+                                        </span>
+                                        <span class="badge bg-info">
+                                            <i class="fa fa-clock-o"/> <t t-esc="job.contract_type_id.name or 'Full Time'"/>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="s_text_block pt32 pb32">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-lg-8">
+                                    <div class="mb-4">
+                                        <h3>Job Description</h3>
+                                        <div class="job_description">
+                                            <t t-raw="job.website_description or job.description"/>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <h3>Available OJT Batches</h3>
+                                        <t t-if="available_batches">
+                                            <div class="row">
+                                                <t t-foreach="available_batches" t-as="batch">
+                                                    <div class="col-md-6 mb-3">
+                                                        <div class="card">
+                                                            <div class="card-body">
+                                                                <h5 class="card-title">
+                                                                    <t t-esc="batch.name"/>
+                                                                </h5>
+                                                                <p class="card-text">
+                                                                    <small class="text-muted">
+                                                                        <i class="fa fa-calendar"/> Start: <t t-esc="batch.start_date"/><br/>
+                                                                        <i class="fa fa-calendar-check-o"/> End: <t t-esc="batch.end_date"/><br/>
+                                                                        <i class="fa fa-users"/> Capacity: <t t-esc="batch.capacity or 'Unlimited'"/><br/>
+                                                                        <i class="fa fa-globe"/> Mode: <t t-esc="batch.mode.title()"/>
+                                                                    </small>
+                                                                </p>
+                                                                <a t-attf-href="/ojt/jobs/apply/{{ slug(job) }}?batch={{ batch.id }}" class="btn btn-success btn-sm">
+                                                                    Apply for this Batch
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </t>
+                                            </div>
+                                        </t>
+                                        <t t-else="">
+                                            <div class="alert alert-info">
+                                                <i class="fa fa-info-circle"/> No active batches available for this position at the moment.
+                                            </div>
+                                        </t>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-4">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Quick Apply</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <a t-attf-href="/ojt/jobs/apply/{{ slug(job) }}" class="btn btn-primary btn-lg w-100">
+                                                Apply Now
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </t>
+        </template>
+
+        <!-- OJT Application Form Template -->
+        <template id="ojt_apply" name="OJT Application Form">
+            <t t-call="website.layout">
+                <div id="wrap" class="oe_structure oe_empty">
+                    <section class="s_title pt32 pb32 bg-beta">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-lg-8 offset-lg-2 text-center">
+                                    <h1 class="s_title_default">
+                                        Apply for <t t-esc="job.name"/>
+                                    </h1>
+                                    <p class="s_title_text lead">
+                                        Fill out the form below to submit your application
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="s_text_block pt32 pb32">
+                        <div class="container">
+                            <div class="row justify-content-center">
+                                <div class="col-lg-8">
+                                    <form t-attf-action="/ojt/jobs/apply/{{ job.id }}" method="post" enctype="multipart/form-data">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <input type="hidden" name="job_id" t-att-value="job.id"/>
+
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h4>Personal Information</h4>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-md-6 mb-3">
+                                                        <label for="partner_name" class="form-label">Full Name *</label>
+                                                        <input type="text" class="form-control" id="partner_name" name="partner_name"
+                                                               t-att-value="default.get('partner_name', '')" required="required"/>
+                                                        <t t-if="error.get('partner_name')">
+                                                            <div class="text-danger small mt-1">
+                                                                <t t-esc="error['partner_name']"/>
+                                                            </div>
+                                                        </t>
+                                                    </div>
+                                                    <div class="col-md-6 mb-3">
+                                                        <label for="email_from" class="form-label">Email *</label>
+                                                        <input type="email" class="form-control" id="email_from" name="email_from"
+                                                               t-att-value="default.get('email_from', '')" required="required"/>
+                                                        <t t-if="error.get('email_from')">
+                                                            <div class="text-danger small mt-1">
+                                                                <t t-esc="error['email_from']"/>
+                                                            </div>
+                                                        </t>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-md-6 mb-3">
+                                                        <label for="partner_phone" class="form-label">Phone</label>
+                                                        <input type="tel" class="form-control" id="partner_phone" name="partner_phone"
+                                                               t-att-value="default.get('partner_phone', '')"/>
+                                                    </div>
+                                                    <div class="col-md-6 mb-3">
+                                                        <label for="ojt_batch_id" class="form-label">Select OJT Batch *</label>
+                                                        <select class="form-control" id="ojt_batch_id" name="ojt_batch_id" required="required">
+                                                            <option value="">Choose a batch...</option>
+                                                            <t t-foreach="available_batches" t-as="batch">
+                                                                <option t-att-value="batch.id" t-att-selected="str(batch.id) == default.get('ojt_batch_id', '')">
+                                                                    <t t-esc="batch.name"/> (<t t-esc="batch.start_date"/> - <t t-esc="batch.end_date"/>)
+                                                                </option>
+                                                            </t>
+                                                        </select>
+                                                        <t t-if="error.get('ojt_batch_id')">
+                                                            <div class="text-danger small mt-1">
+                                                                <t t-esc="error['ojt_batch_id']"/>
+                                                            </div>
+                                                        </t>
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label for="description" class="form-label">Cover Letter / Motivation</label>
+                                                    <textarea class="form-control" id="description" name="description" rows="4"
+                                                              t-att-value="default.get('description', '')"
+                                                              placeholder="Tell us why you're interested in this OJT program..."></textarea>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label for="resume" class="form-label">Resume/CV</label>
+                                                    <input type="file" class="form-control" id="resume" name="resume" accept=".pdf,.doc,.docx"/>
+                                                    <div class="form-text">
+                                                        Accepted formats: PDF, DOC, DOCX. Max size: 10MB
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-footer">
+                                                <button type="submit" class="btn btn-primary btn-lg">
+                                                    <i class="fa fa-paper-plane"/> Submit Application
+                                                </button>
+                                                <a t-attf-href="/ojt/jobs/{{ slug(job) }}" class="btn btn-secondary btn-lg ms-2">
+                                                    Back to Job Details
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </t>
+        </template>
+
+        <!-- Application Submitted Confirmation Template -->
+        <template id="ojt_application_submitted" name="OJT Application Submitted">
+            <t t-call="website.layout">
+                <div id="wrap" class="oe_structure oe_empty">
+                    <section class="s_title pt32 pb32 bg-success text-white">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-lg-8 offset-lg-2 text-center">
+                                    <h1 class="s_title_default">
+                                        <i class="fa fa-check-circle"/> Application Submitted!
+                                    </h1>
+                                    <p class="s_title_text lead">
+                                        Thank you for your interest in our OJT program
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="s_text_block pt32 pb32">
+                        <div class="container">
+                            <div class="row justify-content-center">
+                                <div class="col-lg-6">
+                                    <div class="card text-center">
+                                        <div class="card-body">
+                                            <h4 class="card-title text-success">
+                                                <i class="fa fa-check-circle fa-3x mb-3"/>
+                                                <br/>
+                                                Your application has been received!
+                                            </h4>
+                                            <p class="card-text">
+                                                We have received your application for <strong><t t-esc="job.name"/></strong>.
+                                                Our recruitment team will review your application and get back to you soon.
+                                            </p>
+                                            <div class="mt-4">
+                                                <a href="/ojt/jobs" class="btn btn-primary">
+                                                    <i class="fa fa-search"/> Browse More OJT Programs
+                                                </a>
+                                                <a href="/" class="btn btn-secondary ms-2">
+                                                    <i class="fa fa-home"/> Back to Home
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </t>
+        </template>
+
+        <!-- OJT Batches Listing Template -->
+        <template id="ojt_batches" name="OJT Batches">
+            <t t-call="website.layout">
+                <div id="wrap" class="oe_structure oe_empty">
+                    <section class="s_title pt32 pb32 bg-beta">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-lg-8 offset-lg-2 text-center">
+                                    <h1 class="s_title_default">
+                                        <span class="o_default_snippet_text">Available OJT Batches</span>
+                                    </h1>
+                                    <p class="s_title_text lead">
+                                        Explore our current On-the-Job Training programs
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="s_text_block pt32 pb32">
+                        <div class="container">
+                            <div class="row">
+                                <t t-foreach="batches" t-as="batch">
+                                    <div class="col-lg-6 col-xl-4 mb-4">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <h5 class="card-title">
+                                                    <a t-attf-href="/ojt/batches/{{ slug(batch) }}" class="text-decoration-none">
+                                                        <t t-esc="batch.name"/>
+                                                    </a>
+                                                </h5>
+                                                <p class="card-text text-muted">
+                                                    <t t-esc="batch.job_id.name or 'General Training'"/>
+                                                </p>
+                                                <div class="mb-2">
+                                                    <small class="text-muted">
+                                                        <i class="fa fa-calendar"/> <t t-esc="batch.start_date"/> - <t t-esc="batch.end_date"/>
+                                                    </small>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <small class="text-muted">
+                                                        <i class="fa fa-users"/> Participants: <t t-esc="batch.participant_count"/>/<t t-esc="batch.capacity or '∞'"/>
+                                                    </small>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <small class="text-muted">
+                                                        <i class="fa fa-globe"/> <t t-esc="batch.mode.title()"/>
+                                                    </small>
+                                                </div>
+                                                <span t-attf-class="badge bg-{{ 'success' if batch.state == 'recruit' else 'primary' if batch.state == 'ongoing' else 'secondary' }}">
+                                                    <t t-esc="batch.state.title()"/>
+                                                </span>
+                                            </div>
+                                            <div class="card-footer bg-transparent">
+                                                <a t-attf-href="/ojt/batches/{{ slug(batch) }}" class="btn btn-primary btn-sm">
+                                                    View Details
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </t>
+        </template>
+
+        <!-- OJT Batch Detail Template -->
+        <template id="ojt_batch_detail" name="OJT Batch Detail">
+            <t t-call="website.layout">
+                <div id="wrap" class="oe_structure oe_empty">
+                    <section class="s_title pt32 pb32 bg-beta">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-lg-8 offset-lg-2">
+                                    <h1 class="s_title_default">
+                                        <t t-esc="batch.name"/>
+                                    </h1>
+                                    <div class="d-flex flex-wrap gap-3 mb-3">
+                                        <span class="badge bg-primary">
+                                            <i class="fa fa-briefcase"/> <t t-esc="batch.job_id.name or 'General Training'"/>
+                                        </span>
+                                        <span class="badge bg-secondary">
+                                            <i class="fa fa-building"/> <t t-esc="batch.department_id.name or 'General'"/>
+                                        </span>
+                                        <span t-attf-class="badge bg-{{ 'success' if batch.state == 'recruit' else 'primary' if batch.state == 'ongoing' else 'secondary' }}">
+                                            <t t-esc="batch.state.title()"/>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="s_text_block pt32 pb32">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-lg-8">
+                                    <div class="mb-4">
+                                        <h3>Batch Information</h3>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <p><strong>Start Date:</strong> <t t-esc="batch.start_date"/></p>
+                                                <p><strong>End Date:</strong> <t t-esc="batch.end_date"/></p>
+                                                <p><strong>Training Mode:</strong> <t t-esc="batch.mode.title()"/></p>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <p><strong>Capacity:</strong> <t t-esc="batch.capacity or 'Unlimited'"/></p>
+                                                <p><strong>Current Participants:</strong> <t t-esc="batch.participant_count"/></p>
+                                                <p><strong>Department:</strong> <t t-esc="batch.department_id.name or 'General'"/></p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <t t-if="batch.description">
+                                        <div class="mb-4">
+                                            <h3>Description</h3>
+                                            <div t-raw="batch.description"/>
+                                        </div>
+                                    </t>
+
+                                    <t t-if="batch.event_link_ids">
+                                        <div class="mb-4">
+                                            <h3>Training Schedule</h3>
+                                            <div class="table-responsive">
+                                                <table class="table table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Event</th>
+                                                            <th>Date</th>
+                                                            <th>Mandatory</th>
+                                                            <th>Status</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <t t-foreach="batch.event_link_ids.sorted('event_date')" t-as="event">
+                                                            <tr>
+                                                                <td><t t-esc="event.name"/></td>
+                                                                <td><t t-esc="event.event_date"/></td>
+                                                                <td>
+                                                                    <span t-attf-class="badge bg-{{ 'success' if event.is_mandatory else 'secondary' }}">
+                                                                        <t t-esc="'Yes' if event.is_mandatory else 'No'"/>
+                                                                    </span>
+                                                                </td>
+                                                                <td>
+                                                                    <span t-attf-class="badge bg-{{ 'warning' if event.status == 'planned' else 'primary' if event.status == 'ongoing' else 'success' }}">
+                                                                        <t t-esc="event.status.title()"/>
+                                                                    </span>
+                                                                </td>
+                                                            </tr>
+                                                        </t>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </div>
+
+                                <div class="col-lg-4">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h5>Apply for this Batch</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <t t-if="batch.state == 'recruit'">
+                                                <a t-attf-href="/ojt/jobs/apply/{{ slug(batch.job_id) }}?batch={{ batch.id }}" class="btn btn-success btn-lg w-100">
+                                                    Apply Now
+                                                </a>
+                                            </t>
+                                            <t t-elif="batch.state == 'ongoing'">
+                                                <div class="alert alert-info">
+                                                    <i class="fa fa-info-circle"/> This batch is currently in progress.
+                                                </div>
+                                            </t>
+                                            <t t-else="">
+                                                <div class="alert alert-secondary">
+                                                    <i class="fa fa-times-circle"/> This batch is no longer accepting applications.
+                                                </div>
+                                            </t>
+                                        </div>
+                                    </div>
+
+                                    <t t-if="batch.mentor_ids">
+                                        <div class="card mt-3">
+                                            <div class="card-header">
+                                                <h5>Mentors &amp; Instructors</h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <t t-foreach="batch.mentor_ids" t-as="mentor">
+                                                    <div class="d-flex align-items-center mb-2">
+                                                        <div class="flex-grow-1">
+                                                            <strong><t t-esc="mentor.name"/></strong>
+                                                            <t t-if="mentor.email">
+                                                                <br/><small class="text-muted"><t t-esc="mentor.email"/></small>
+                                                            </t>
+                                                        </div>
+                                                    </div>
+                                                </t>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </t>
+        </template>
+    </data>
+</odoo>

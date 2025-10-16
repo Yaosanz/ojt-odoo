@@ -41,10 +41,6 @@ class OjtEventLink(models.Model):
 
     @api.model
     def create(self, vals):
-        if vals.get('event_id'):
-            event = self.env['event.event'].browse(vals['event_id'])
-            if event and not vals.get('online_meeting_url'):
-                vals['online_meeting_url'] = event.website_url or ''
         return super().create(vals)
 
     def action_mark_done(self):

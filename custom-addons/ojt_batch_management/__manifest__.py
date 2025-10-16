@@ -58,6 +58,7 @@
         # Portal templates last
         'views/certificate_verify_templates.xml',
         'views/portal/ojt_portal_templates.xml',
+        'views/website_recruitment_templates.xml',
     ],
     'assets': {
         'web.assets_frontend': [

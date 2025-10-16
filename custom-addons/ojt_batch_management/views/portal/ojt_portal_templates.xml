@@ -1,292 +1,252 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
+    <!-- ============================= -->
+    <!--      OJT PORTAL DASHBOARD     -->
+    <!-- ============================= -->
     <template id="portal_ojt_dashboard" name="OJT Portal Dashboard">
-        <t t-call="portal.layout">
-            <div class="container mt-5">
-                <div class="row">
-                    <div class="col-md-12">
-                        <h2>My OJT Dashboard</h2>
-                        <t t-if="participant">
-                            <!-- Participant Info Card -->
-                            <div class="card mb-4">
-                                <div class="card-header bg-primary text-white">
-                                    <h5 class="mb-0">Participant Information</h5>
+        <t t-call="portal.portal_layout"> <!-- gunakan portal.portal_layout, bukan website.layout -->
+            <div class="container mt-5 o_portal_my_ojt">
+                <h2 class="mb-4">My OJT Dashboard</h2>
+
+                <t t-if="participant">
+                    <!-- ====================== -->
+                    <!-- Participant Info Card -->
+                    <!-- ====================== -->
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">Participant Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Name:</strong> <t t-esc="participant.name"/></p>
+                                    <p><strong>Batch:</strong> <t t-esc="participant.batch_id.name"/></p>
+                                    <p><strong>Status:</strong>
+                                        <span t-attf-class="badge badge-{{ participant.state == 'completed' and 'success' or participant.state == 'active' and 'info' or 'secondary' }}">
+                                            <t t-esc="participant.state"/>
+                                        </span>
+                                    </p>
                                 </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <p><strong>Name:</strong> <t t-esc="participant.name"/></p>
-                                            <p><strong>Batch:</strong> <t t-esc="participant.batch_id.name"/></p>
-                                            <p><strong>Status:</strong>
-                                                <span t-attf-class="badge badge-{{ participant.state == 'completed' and 'success' or participant.state == 'active' and 'info' or 'secondary' }}">
-                                                    <t t-esc="participant.state"/>
-                                                </span>
-                                            </p>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <p><strong>Start Date:</strong> <t t-esc="participant.start_date"/></p>
-                                            <p><strong>End Date:</strong> <t t-esc="participant.end_date"/></p>
-                                            <p><strong>Student ID:</strong> <t t-esc="participant.student_id"/></p>
-                                        </div>
-                                    </div>
+                                <div class="col-md-6">
+                                    <p><strong>Start Date:</strong> <t t-esc="participant.start_date"/></p>
+                                    <p><strong>End Date:</strong> <t t-esc="participant.end_date"/></p>
+                                    <p><strong>Student ID:</strong> <t t-esc="participant.student_id"/></p>
                                 </div>
                             </div>
+                        </div>
+                    </div>
 
-                            <!-- Performance Overview -->
-                            <div class="row mb-4">
-                                <div class="col-md-6">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <h6 class="mb-0">Attendance Rate</h6>
+                    <!-- ====================== -->
+                    <!-- Performance Overview -->
+                    <!-- ====================== -->
+                    <div class="row mb-4">
+                        <div class="col-md-6 mb-3">
+                            <div class="card shadow-sm">
+                                <div class="card-header"><h6 class="mb-0">Attendance Rate</h6></div>
+                                <div class="card-body text-center">
+                                    <div class="progress mb-2" style="height: 20px;">
+                                        <div class="progress-bar" t-attf-style="width: {{ participant.attendance_rate }}%">
+                                            <t t-esc="participant.attendance_rate"/>%
                                         </div>
-                                        <div class="card-body text-center">
-                                            <div class="progress mb-2" style="height: 20px;">
-                                                <div class="progress-bar" t-attf-style="width: {{ participant.attendance_rate }}%">
-                                                    <t t-esc="participant.attendance_rate"/>%
+                                    </div>
+                                    <small class="text-muted">Total Attendances: <t t-esc="participant.attendance_count"/></small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <div class="card shadow-sm">
+                                <div class="card-header"><h6 class="mb-0">Final Score</h6></div>
+                                <div class="card-body text-center">
+                                    <h3 class="text-primary mb-0"><t t-esc="participant.score_final"/>%</h3>
+                                    <small class="text-muted">Average Score: <t t-esc="participant.score_avg"/>%</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ====================== -->
+                    <!-- Assignments Section -->
+                    <!-- ====================== -->
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-header">
+                            <h5 class="mb-0">My Assignments</h5>
+                        </div>
+                        <div class="card-body">
+                            <t t-if="assignments">
+                                <div class="table-responsive">
+                                    <table class="table table-striped align-middle">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th>Assignment</th>
+                                                <th>Due Date</th>
+                                                <th>Status</th>
+                                                <th>Score</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="assignments" t-as="assignment">
+                                                <tr>
+                                                    <td><t t-esc="assignment.assignment_id.name"/></td>
+                                                    <td><t t-esc="assignment.assignment_id.due_date"/></td>
+                                                    <td>
+                                                        <span t-attf-class="badge badge-{{ assignment.state == 'scored' and 'success' or assignment.state == 'submitted' and 'info' or 'secondary' }}">
+                                                            <t t-esc="assignment.state"/>
+                                                        </span>
+                                                    </td>
+                                                    <td><t t-esc="assignment.score or '-'"/></td>
+                                                    <td>
+                                                        <a t-attf-href="/my/ojt/assignment/{{ assignment.id }}"
+                                                           t-att-class="'btn btn-sm ' + (assignment.state == 'draft' and 'btn-primary' or 'btn-info')">
+                                                           <t t-esc="assignment.state == 'draft' and 'Submit' or 'View'"/>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <p class="text-muted mb-0">No assignments available.</p>
+                            </t>
+                        </div>
+                    </div>
+
+                    <!-- ====================== -->
+                    <!-- Certificates Section -->
+                    <!-- ====================== -->
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-header">
+                            <h5 class="mb-0">My Certificates</h5>
+                        </div>
+                        <div class="card-body">
+                            <t t-if="certificates">
+                                <div class="row">
+                                    <t t-foreach="certificates" t-as="cert">
+                                        <div class="col-md-6 mb-3">
+                                            <div class="card border-success shadow-sm h-100">
+                                                <div class="card-body">
+                                                    <h6 class="card-title"><t t-esc="cert.name"/></h6>
+                                                    <p class="card-text">
+                                                        <strong>Batch:</strong> <t t-esc="cert.batch_id.name"/><br/>
+                                                        <strong>Issued:</strong> <t t-esc="cert.issue_date"/><br/>
+                                                        <strong>Score:</strong> <t t-esc="cert.final_score"/>%<br/>
+                                                        <strong>Grade:</strong> <t t-esc="cert.grade"/>
+                                                    </p>
+                                                    <a t-attf-href="/my/ojt/certificate/{{ cert.id }}" class="btn btn-sm btn-success">
+                                                        View Certificate
+                                                    </a>
                                                 </div>
                                             </div>
-                                            <small class="text-muted">Total Attendances: <t t-esc="participant.attendance_count"/></small>
                                         </div>
-                                    </div>
+                                    </t>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <p class="text-muted mb-0">No certificates issued yet.</p>
+                            </t>
+                        </div>
+                    </div>
+
+                    <!-- ====================== -->
+                    <!-- Progress Tracking -->
+                    <!-- ====================== -->
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-header">
+                            <h5 class="mb-0">Progress Tracking</h5>
+                        </div>
+                        <div class="card-body">
+                            <t t-if="progress_records">
+                                <div class="table-responsive">
+                                    <table class="table table-striped align-middle">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th>Week</th>
+                                                <th>Evaluation</th>
+                                                <th>Progress</th>
+                                                <th>Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="progress_records" t-as="progress">
+                                                <tr>
+                                                    <td><t t-esc="progress.week"/></td>
+                                                    <td>
+                                                        <span t-attf-class="badge badge-{{ progress.evaluation == 'excellent' and 'success' or progress.evaluation == 'good' and 'info' or progress.evaluation == 'average' and 'warning' or 'danger' }}">
+                                                            <t t-esc="progress.evaluation"/>
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <div class="progress" style="width: 100px;">
+                                                            <div class="progress-bar" t-attf-style="width: {{ progress.progress_percentage }}%">
+                                                                <t t-esc="progress.progress_percentage"/>%
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td><t t-esc="progress.date_recorded"/></td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <p class="text-muted mb-0">No progress records available.</p>
+                            </t>
+                        </div>
+                    </div>
+                </t>
+
+                <t t-else="">
+                    <div class="alert alert-info">
+                        <h4>No OJT data available</h4>
+                        <p>You are not currently enrolled in any OJT program.</p>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+
+    <!-- ============================= -->
+    <!-- Certificate View Template -->
+    <!-- ============================= -->
+    <template id="portal_ojt_certificate_view" name="Certificate View Portal">
+        <t t-call="portal.portal_layout">
+            <div class="container mt-5 o_portal_certificate_view">
+                <h2>My Certificate</h2>
+                <t t-if="certificate">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-success text-white">
+                            <h5><t t-esc="certificate.name"/></h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Participant:</strong> <t t-esc="certificate.participant_id.name"/></p>
+                                    <p><strong>Batch:</strong> <t t-esc="certificate.batch_id.name"/></p>
+                                    <p><strong>Issue Date:</strong> <t t-esc="certificate.issue_date"/></p>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <h6 class="mb-0">Final Score</h6>
-                                        </div>
-                                        <div class="card-body text-center">
-                                            <h3 class="text-primary"><t t-esc="participant.score_final"/>%</h3>
-                                            <small class="text-muted">Average Score: <t t-esc="participant.score_avg"/>%</small>
-                                        </div>
-                                    </div>
+                                    <p><strong>Attendance Rate:</strong> <t t-esc="certificate.attendance_rate"/>%</p>
+                                    <p><strong>Final Score:</strong> <t t-esc="certificate.final_score"/>%</p>
+                                    <p><strong>Grade:</strong> <t t-esc="certificate.grade"/></p>
                                 </div>
                             </div>
-
-                            <!-- Assignments Section -->
-                            <div class="card mb-4">
-                                <div class="card-header">
-                                    <h5 class="mb-0">My Assignments</h5>
+                            <t t-if="certificate.pdf_file">
+                                <div class="text-center mt-4">
+                                    <a t-attf-href="/my/ojt/certificate/{{ certificate.id }}/download" class="btn btn-success btn-lg">
+                                        <i class="fa fa-download"></i> Download Certificate
+                                    </a>
                                 </div>
-                                <div class="card-body">
-                                    <t t-if="assignments">
-                                        <div class="table-responsive">
-                                            <table class="table table-striped">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Assignment</th>
-                                                        <th>Due Date</th>
-                                                        <th>Status</th>
-                                                        <th>Score</th>
-                                                        <th>Action</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <t t-foreach="assignments" t-as="assignment">
-                                                        <tr>
-                                                            <td><t t-esc="assignment.assignment_id.name"/></td>
-                                                            <td><t t-esc="assignment.assignment_id.due_date"/></td>
-                                                            <td>
-                                                                <span t-attf-class="badge badge-{{ assignment.state == 'scored' and 'success' or assignment.state == 'submitted' and 'info' or 'secondary' }}">
-                                                                    <t t-esc="assignment.state"/>
-                                                                </span>
-                                                            </td>
-                                                            <td><t t-esc="assignment.score or '-'"/></td>
-                                                            <td>
-                                                                <t t-if="assignment.state == 'draft'">
-                                                                    <a t-attf-href="/my/ojt/assignment/{{ assignment.id }}" class="btn btn-sm btn-primary">Submit</a>
-                                                                </t>
-                                                                <t t-elif="assignment.state in ['submitted', 'scored']">
-                                                                    <a t-attf-href="/my/ojt/assignment/{{ assignment.id }}" class="btn btn-sm btn-info">View</a>
-                                                                </t>
-                                                            </td>
-                                                        </tr>
-                                                    </t>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </t>
-                                    <t t-else="">
-                                        <p class="text-muted">No assignments available.</p>
-                                    </t>
-                                </div>
-                            </div>
-
-                            <!-- Certificates Section -->
-                            <div class="card mb-4">
-                                <div class="card-header">
-                                    <h5 class="mb-0">My Certificates</h5>
-                                </div>
-                                <div class="card-body">
-                                    <t t-if="certificates">
-                                        <div class="row">
-                                            <t t-foreach="certificates" t-as="cert">
-                                                <div class="col-md-6 mb-3">
-                                                    <div class="card border-success">
-                                                        <div class="card-body">
-                                                            <h6 class="card-title"><t t-esc="cert.name"/></h6>
-                                                            <p class="card-text">
-                                                                <strong>Batch:</strong> <t t-esc="cert.batch_id.name"/><br/>
-                                                                <strong>Issued:</strong> <t t-esc="cert.issue_date"/><br/>
-                                                                <strong>Score:</strong> <t t-esc="cert.final_score"/>%<br/>
-                                                                <strong>Grade:</strong> <t t-esc="cert.grade"/>
-                                                            </p>
-                                                            <a t-attf-href="/my/ojt/certificate/{{ cert.id }}" class="btn btn-sm btn-success">View Certificate</a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </t>
-                                        </div>
-                                    </t>
-                                    <t t-else="">
-                                        <p class="text-muted">No certificates issued yet.</p>
-                                    </t>
-                                </div>
-                            </div>
-
-                            <!-- Progress Tracking -->
-                            <div class="card mb-4">
-                                <div class="card-header">
-                                    <h5 class="mb-0">Progress Tracking</h5>
-                                </div>
-                                <div class="card-body">
-                                    <t t-if="progress_records">
-                                        <div class="table-responsive">
-                                            <table class="table table-striped">
-                                                <thead>
-                                                    <tr>
-                                                        <th>Week</th>
-                                                        <th>Evaluation</th>
-                                                        <th>Progress</th>
-                                                        <th>Date</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <t t-foreach="progress_records" t-as="progress">
-                                                        <tr>
-                                                            <td><t t-esc="progress.week"/></td>
-                                                            <td>
-                                                                <span t-attf-class="badge badge-{{ progress.evaluation == 'excellent' and 'success' or progress.evaluation == 'good' and 'info' or progress.evaluation == 'average' and 'warning' or 'danger' }}">
-                                                                    <t t-esc="progress.evaluation"/>
-                                                                </span>
-                                                            </td>
-                                                            <td>
-                                                                <div class="progress" style="width: 100px;">
-                                                                    <div class="progress-bar" t-attf-style="width: {{ progress.progress_percentage }}%">
-                                                                        <t t-esc="progress.progress_percentage"/>%
-                                                                    </div>
-                                                                </div>
-                                                            </td>
-                                                            <td><t t-esc="progress.date_recorded"/></td>
-                                                        </tr>
-                                                    </t>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </t>
-                                    <t t-else="">
-                                        <p class="text-muted">No progress records available.</p>
-                                    </t>
-                                </div>
-                            </div>
-                        </t>
-                        <t t-else="">
-                            <div class="alert alert-info">
-                                <h4>No OJT data available</h4>
-                                <p>You are not currently enrolled in any OJT program.</p>
-                            </div>
-                        </t>
+                            </t>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </t>
-    </template>
-
-    <!-- Assignment Submission Portal -->
-    <template id="portal_ojt_assignment_submit" name="Assignment Submission Portal">
-        <t t-call="portal.layout">
-            <div class="container mt-5">
-                <div class="row">
-                    <div class="col-md-12">
-                        <h2>Submit Assignment</h2>
-                        <t t-if="submission">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h5><t t-esc="submission.assignment_id.name"/></h5>
-                                </div>
-                                <div class="card-body">
-                                    <p><strong>Description:</strong> <t t-esc="submission.assignment_id.description"/></p>
-                                    <p><strong>Due Date:</strong> <t t-esc="submission.assignment_id.due_date"/></p>
-                                    <p><strong>Max Score:</strong> <t t-esc="submission.assignment_id.max_score"/></p>
-
-                                    <form method="post" enctype="multipart/form-data">
-                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
-                                        <input type="hidden" name="submission_id" t-att-value="submission.id"/>
-
-                                        <div class="form-group">
-                                            <label for="url_link">Submission Link (optional)</label>
-                                            <input type="url" class="form-control" id="url_link" name="url_link" t-att-value="submission.url_link"/>
-                                        </div>
-
-                                        <div class="form-group">
-                                            <label for="attachment_ids">Attachments</label>
-                                            <input type="file" class="form-control-file" id="attachment_ids" name="attachment_ids" multiple="multiple"/>
-                                        </div>
-
-                                        <button type="submit" class="btn btn-primary">Submit Assignment</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </t>
-                        <t t-else="">
-                            <div class="alert alert-warning">Assignment not found.</div>
-                        </t>
-                    </div>
-                </div>
-            </div>
-        </t>
-    </template>
-
-    <!-- Certificate View Portal -->
-    <template id="portal_ojt_certificate_view" name="Certificate View Portal">
-        <t t-call="portal.layout">
-            <div class="container mt-5">
-                <div class="row">
-                    <div class="col-md-12">
-                        <h2>My Certificate</h2>
-                        <t t-if="certificate">
-                            <div class="card">
-                                <div class="card-header bg-success text-white">
-                                    <h5><t t-esc="certificate.name"/></h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <p><strong>Participant:</strong> <t t-esc="certificate.participant_id.name"/></p>
-                                            <p><strong>Batch:</strong> <t t-esc="certificate.batch_id.name"/></p>
-                                            <p><strong>Issue Date:</strong> <t t-esc="certificate.issue_date"/></p>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <p><strong>Attendance Rate:</strong> <t t-esc="certificate.attendance_rate"/>%</p>
-                                            <p><strong>Final Score:</strong> <t t-esc="certificate.final_score"/>%</p>
-                                            <p><strong>Grade:</strong> <t t-esc="certificate.grade"/></p>
-                                        </div>
-                                    </div>
-
-                                    <t t-if="certificate.pdf_file">
-                                        <div class="text-center mt-4">
-                                            <a t-attf-href="/my/ojt/certificate/{{ certificate.id }}/download" class="btn btn-success btn-lg">
-                                                <i class="fa fa-download"></i> Download Certificate
-                                            </a>
-                                        </div>
-                                    </t>
-                                </div>
-                            </div>
-                        </t>
-                        <t t-else="">
-                            <div class="alert alert-warning">Certificate not found.</div>
-                        </t>
-                    </div>
-                </div>
+                </t>
+                <t t-else="">
+                    <div class="alert alert-warning mt-3">Certificate not found.</div>
+                </t>
             </div>
         </t>
     </template>

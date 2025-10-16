@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from odoo import http, fields
 from odoo.http import request
 from odoo.addons.portal.controllers.portal import CustomerPortal
@@ -18,7 +19,6 @@ class OjtPortalPublic(http.Controller):
         if error_param == 'invalid_qr':
             error_message = "Invalid QR code. Certificate not found."
         elif serial:
-            # Use the new verify_certificate method
             result = request.env['ojt.certificate'].sudo().verify_certificate(serial)
             if result['valid']:
                 certificate = request.env['ojt.certificate'].sudo().search([
@@ -52,7 +52,6 @@ class OjtPortalPublic(http.Controller):
         message_type = 'info'
 
         if qr_token:
-            # Decode QR token (format: event_id-participant_id-timestamp)
             try:
                 parts = qr_token.split('-')
                 if len(parts) >= 2:
@@ -63,7 +62,6 @@ class OjtPortalPublic(http.Controller):
                     participant = request.env['ojt.participant'].sudo().browse(participant_id)
 
                     if event_link.exists() and participant.exists():
-                        # Check if already checked in
                         existing_attendance = request.env['ojt.attendance'].sudo().search([
                             ('event_link_id', '=', event_id),
                             ('participant_id', '=', participant_id),
@@ -75,7 +73,6 @@ class OjtPortalPublic(http.Controller):
                                 message = "Already checked out for today."
                                 message_type = 'warning'
                             else:
-                                # Check out
                                 existing_attendance.sudo().write({
                                     'check_out': fields.Datetime.now(),
                                     'presence': 'present'
@@ -83,7 +80,6 @@ class OjtPortalPublic(http.Controller):
                                 message = f"Checked out successfully at {fields.Datetime.now().strftime('%H:%M')}."
                                 message_type = 'success'
                         else:
-                            # Check in
                             request.env['ojt.attendance'].sudo().create({
                                 'event_link_id': event_id,
                                 'participant_id': participant_id,
@@ -125,9 +121,14 @@ class OjtPortalPublic(http.Controller):
             ])
         return request.not_found()
 
+    # 🔹 Tambahan: QR Tool Page
+    @http.route('/ojt/qr/tool', type='http', auth='public', website=True)
+    def qr_tool_page(self, **kwargs):
+        """Public page for QR Code Generator & Scanner"""
+        return request.render('ojt_batch_management.qr_tool_page', {})
+
 
 class OjtPortal(CustomerPortal):
-
     def _prepare_home_portal_values(self, counters):
         values = super()._prepare_home_portal_values(counters)
         if request.env.user.has_group('base.group_portal'):
