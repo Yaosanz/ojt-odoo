@@ -1,0 +1,65 @@
+# ==========================
+# ODOO + DOCKER GITIGNORE
+# ==========================
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+*.egg
+*.log
+
+# ---- Environment & Config ----
+.env
+*.env
+config/
+*.conf
+*.ini
+*.cfg
+
+# ---- Odoo Data (auto-generated) ----
+odoo-data/
+odoo-data/sessions/
+odoo-data/filestore/
+odoo-data/.*
+odoo-data/*
+
+# ---- Docker ----
+docker-compose.override.yml
+docker-compose.local.yml
+Dockerfile.local
+*.pid
+*.sock
+*.log
+
+# ---- Backup & Temp ----
+*.bak
+*.tmp
+*.swp
+*.swo
+*.orig
+*.~lock*
+*.DS_Store
+Thumbs.db
+
+# ---- IDE / Editor ----
+.vscode/
+.idea/
+*.code-workspace
+
+# ---- Test / Build artifacts ----
+build/
+dist/
+node_modules/
+coverage/
+reports/
+
+# ---- Odoo Custom Addons Cache ----
+addons/*/__pycache__/
+addons/*/static/.*
+addons/*/i18n/.*
+addons/*/tmp/
+addons/*/cache/
