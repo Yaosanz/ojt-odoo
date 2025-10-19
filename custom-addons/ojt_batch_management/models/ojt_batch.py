@@ -11,7 +11,7 @@ class OjtBatch(models.Model):
 
     name = fields.Char(string="Batch Name", required=True, tracking=True)
     code = fields.Char(string="Batch Code", required=True, copy=False, readonly=True,
-                       default=lambda self: _('New'), tracking=True)
+                       default=lambda self: _('OJT'), tracking=True)
     job_id = fields.Many2one('hr.job', string='Related Job Position', tracking=True)
     ojt_batch_ids = fields.One2many('hr.applicant', 'ojt_batch_id', string='Applications')
     description = fields.Html(string='Description')
@@ -109,8 +109,23 @@ class OjtBatch(models.Model):
 
     @api.model
     def create(self, vals):
-        if vals.get('code', _('New')) == _('New'):
-            vals['code'] = self.env['ir.sequence'].next_by_code('ojt.batch') or _('New')
+        if vals.get('code', _('OJT')) == _('OJT'):
+            # Generate batch code: BATCH + random unique code
+            batch_prefix = 'BATCH'
+
+            # Generate unique random code (6 digits)
+            import random
+            while True:
+                random_code = f"{random.randint(100000, 999999)}"
+                batch_code = f"{batch_prefix}-{random_code}"
+                # Check uniqueness across all batches
+                existing = self.env['ojt.batch'].sudo().search([
+                    ('code', '=', batch_code)
+                ], limit=1)
+                if not existing:
+                    break
+
+            vals['code'] = batch_code
         return super().create(vals)
 
     def action_recruit(self):

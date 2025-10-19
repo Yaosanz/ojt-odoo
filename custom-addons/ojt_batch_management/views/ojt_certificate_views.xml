@@ -103,31 +103,31 @@
                 <sheet>
                     <div class="oe_title">
                         <h1>
-                            <field name="name" readonly="1"/>
+                            <field name="name"/>
                         </h1>
                         <h3>
-                            <field name="participant_id" readonly="1"/>
+                            <field name="participant_id"/>
                         </h3>
                     </div>
                     <group>
                         <group string="Certificate Details">
                             <field name="participant_id" required="1"/>
-                            <field name="batch_id" readonly="1"/>
+                            <field name="batch_id"/>
                             <field name="issue_date"/>
                             <field name="mentor_name"/>
                         </group>
                         <group string="Performance">
-                            <field name="attendance_rate" readonly="1" widget="percentpie"/>
-                            <field name="final_score" readonly="1"/>
-                            <field name="grade" readonly="1"/>
-                            <field name="serial" readonly="1"/>
+                            <field name="attendance_rate" widget="percentpie"/>
+                            <field name="final_score"/>
+                            <field name="grade"/>
+                            <field name="serial"/>
                         </group>
                     </group>
                     <notebook>
                         <page string="Certificate PDF">
                             <group>
-                                <field name="pdf_file" readonly="1" filename="pdf_filename"/>
-                                <field name="pdf_filename" readonly="1"/>
+                                <field name="pdf_file" filename="pdf_filename"/>
+                                <field name="pdf_filename"/>
                             </group>
                         </page>
                         <page string="Remarks">

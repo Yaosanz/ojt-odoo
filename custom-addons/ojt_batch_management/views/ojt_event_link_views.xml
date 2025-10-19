@@ -107,7 +107,7 @@
                             <field name="weight"/>
                             <field name="event_id"/>
                             <field name="online_meeting_url"/>
-                            <field name="status" readonly="1"/>
+                            <field name="status"/>
                         </group>
                     </group>
                     <notebook>

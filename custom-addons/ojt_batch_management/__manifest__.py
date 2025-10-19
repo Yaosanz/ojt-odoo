@@ -49,6 +49,7 @@
         'views/ojt_assignment_views.xml',
         'views/ojt_assignment_submit_views.xml',
         'views/ojt_event_link_views.xml',
+        'views/website_recruitment_templates.xml',
         
         # New feature views
         'views/ojt_meeting_attendance_views.xml',
@@ -56,9 +57,18 @@
         'views/ojt_proctoring_views.xml',
 
         # Portal templates last
+        'views/portal/portal_ojt_dashboard.xml',
+        'views/portal/portal_ojt_assignment_view.xml',
+        'views/portal/portal_ojt_assignments_view.xml',
+        'views/portal/portal_ojt_attendance_view.xml',
+        'views/portal/portal_ojt_attendance_records_view.xml',
+        'views/portal/portal_ojt_progress_view.xml',
+        'views/portal/portal_ojt_submission_view.xml',
+        'views/portal/portal_ojt_certificate_view.xml',
+        'views/portal/portal_ojt_events_view.xml',
+        'views/portal/portal_ojt_meeting_attendance_view.xml',
+        'views/portal/portal_menu.xml',
         'views/certificate_verify_templates.xml',
-        'views/portal/ojt_portal_templates.xml',
-        'views/website_recruitment_templates.xml',
     ],
     'assets': {
         'web.assets_frontend': [

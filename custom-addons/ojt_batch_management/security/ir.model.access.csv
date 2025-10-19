@@ -17,3 +17,7 @@ access_ojt_badge_award_user,access_ojt_badge_award_user,model_ojt_badge_award,ba
 access_ojt_badge_award_manager,access_ojt_badge_award_manager,model_ojt_badge_award,base.group_system,1,1,1,1
 access_ojt_quiz_proctoring_user,access_ojt_quiz_proctoring_user,model_ojt_quiz_proctoring,base.group_user,1,1,1,1
 access_ojt_proctoring_log_user,access_ojt_proctoring_log_user,model_ojt_proctoring_log,base.group_user,1,1,1,1
+access_ojt_meeting_attendance_user,ojt.meeting.attendance.user,model_ojt_meeting_attendance,base.group_user,1,1,1,1
+access_ojt_meeting_attendance_portal,ojt.meeting.attendance.portal,model_ojt_meeting_attendance,base.group_portal,1,0,0,0
+access_ojt_meeting_attendee_user,ojt.meeting.attendee.user,model_ojt_meeting_attendee,base.group_user,1,1,1,1
+access_ojt_meeting_attendee_portal,ojt.meeting.attendee.portal,model_ojt_meeting_attendee,base.group_portal,1,0,0,0

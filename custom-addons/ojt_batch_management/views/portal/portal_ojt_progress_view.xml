@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- ============================= -->
+    <!-- Progress Detail View -->
+    <!-- ============================= -->
+    <template id="portal_ojt_progress_view" name="Progress Detail View Portal">
+        <t t-call="portal.portal_layout">
+            <div class="container mt-5 o_portal_progress_view">
+                <div class="mb-3">
+                    <a href="/my/ojt" class="btn btn-secondary">
+                        <i class="fa fa-arrow-left"></i> Back to Dashboard
+                    </a>
+                </div>
+                <h2>Progress Details</h2>
+                <t t-if="progress">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-info text-white">
+                            <h5>Week <t t-esc="progress.week"/> Progress</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Participant:</strong> <t t-esc="progress.participant_id.name"/></p>
+                                    <p><strong>Batch:</strong> <t t-esc="progress.batch_id.name"/></p>
+                                    <p><strong>Date Recorded:</strong> <t t-esc="progress.date_recorded"/></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Evaluation:</strong>
+                                        <span t-attf-class="badge badge-{{ progress.evaluation == 'excellent' and 'success' or progress.evaluation == 'good' and 'info' or progress.evaluation == 'average' and 'warning' or 'danger' }}">
+                                            <t t-esc="progress.evaluation"/>
+                                        </span>
+                                    </p>
+                                    <p><strong>Progress Percentage:</strong> <t t-esc="progress.progress_percentage"/>%</p>
+                                </div>
+                            </div>
+                            <t t-if="progress.description">
+                                <div class="mt-3">
+                                    <strong>Description:</strong>
+                                    <p><t t-esc="progress.description"/></p>
+                                </div>
+                            </t>
+                            <t t-if="progress.mentor_notes">
+                                <div class="mt-3">
+                                    <strong>Mentor Notes:</strong>
+                                    <p><t t-esc="progress.mentor_notes"/></p>
+                                </div>
+                            </t>
+
+                            <!-- Progress Update Form -->
+                            <div class="mt-4">
+                                <h5>Update Progress</h5>
+                                <form action="/my/ojt/progress/update" method="post">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                    <input type="hidden" name="progress_id" t-att-value="progress.id"/>
+
+                                    <div class="form-group">
+                                        <label for="description">Activity Description</label>
+                                        <textarea class="form-control" id="description" name="description" rows="3" placeholder="Describe your activities this week..." required="required"><t t-esc="progress.description"/></textarea>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="progress_percentage">Progress Percentage</label>
+                                        <input type="number" class="form-control" id="progress_percentage" name="progress_percentage" min="0" max="100" t-att-value="progress.progress_percentage" required="required"/>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fa fa-save"></i> Update Progress
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Success/Error Messages -->
+                    <t t-if="success == 'progress_updated'">
+                        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                            <strong>Success!</strong> Your progress has been updated successfully.
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&#215;</span>
+                            </button>
+                        </div>
+                    </t>
+                    <t t-if="error == 'progress_update_failed'">
+                        <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                            <strong>Error!</strong> Progress update failed. Please try again.
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&#215;</span>
+                            </button>
+                        </div>
+                    </t>
+                </t>
+                <t t-else="">
+                    <div class="alert alert-warning mt-3">Progress record not found.</div>
+                </t>
+            </div>
+        </t>
+    </template>
+</odoo>

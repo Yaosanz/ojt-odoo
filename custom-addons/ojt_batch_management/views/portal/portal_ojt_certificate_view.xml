@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- ============================= -->
+    <!-- Certificate View Template -->
+    <!-- ============================= -->
+    <template id="portal_ojt_certificate_view" name="Certificate View Portal">
+        <t t-call="portal.portal_layout">
+            <div class="container mt-5 o_portal_certificate_view">
+                <div class="mb-3">
+                    <a href="/my/ojt" class="btn btn-secondary">
+                        <i class="fa fa-arrow-left"></i> Back to Dashboard
+                    </a>
+                </div>
+                <h2>My Certificate</h2>
+                <t t-if="certificate">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-success text-white">
+                            <h5><t t-esc="certificate.name"/></h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Participant:</strong> <t t-esc="certificate.participant_id.name"/></p>
+                                    <p><strong>Batch:</strong> <t t-esc="certificate.batch_id.name"/></p>
+                                    <p><strong>Issue Date:</strong> <t t-esc="certificate.issue_date"/></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Attendance Rate:</strong> <t t-esc="certificate.attendance_rate"/>%</p>
+                                    <p><strong>Final Score:</strong> <t t-esc="certificate.final_score"/>%</p>
+                                    <p><strong>Grade:</strong> <t t-esc="certificate.grade"/></p>
+                                </div>
+                            </div>
+                            <t t-if="certificate.pdf_file">
+                                <div class="text-center mt-4">
+                                    <a t-attf-href="/my/ojt/certificate/{{ certificate.id }}/download" class="btn btn-success btn-lg">
+                                        <i class="fa fa-download"></i> Download Certificate
+                                    </a>
+                                </div>
+                            </t>
+
+                            <!-- Certificate Request Form (if not issued) -->
+                            <t t-if="certificate.state == 'draft'">
+                                <div class="mt-4">
+                                    <h5>Request Certificate Issuance</h5>
+                                    <p class="text-muted">Your certificate is ready to be issued. Click the button below to request issuance.</p>
+                                    <form action="/my/ojt/certificate/request" method="post">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <input type="hidden" name="certificate_id" t-att-value="certificate.id"/>
+
+                                        <div class="form-group">
+                                            <label for="request_notes">Additional Notes (optional)</label>
+                                            <textarea class="form-control" id="request_notes" name="request_notes" rows="2" placeholder="Any additional notes for your certificate request..."></textarea>
+                                        </div>
+
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fa fa-paper-plane"></i> Request Certificate Issuance
+                                        </button>
+                                    </form>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+
+                    <!-- Success/Error Messages -->
+                    <t t-if="success == 'certificate_requested'">
+                        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                            <strong>Success!</strong> Your certificate issuance request has been submitted successfully.
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&#215;</span>
+                            </button>
+                        </div>
+                    </t>
+                    <t t-if="error == 'certificate_request_failed'">
+                        <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                            <strong>Error!</strong> Certificate request failed. Please try again.
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&#215;</span>
+                            </button>
+                        </div>
+                    </t>
+                </t>
+                <t t-else="">
+                    <div class="alert alert-warning mt-3">Certificate not found.</div>
+                </t>
+            </div>
+        </t>
+    </template>
+</odoo>

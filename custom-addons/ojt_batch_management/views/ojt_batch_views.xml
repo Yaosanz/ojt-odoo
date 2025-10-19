@@ -146,13 +146,13 @@
                             <field name="name" placeholder="Batch Name"/>
                         </h1>
                         <h3>
-                            <field name="code" readonly="1"/>
+                            <field name="code"/>
                         </h3>
                     </div>
                     <group>
                         <group string="Basic Information">
                             <field name="job_id"/>
-                            <field name="ojt_batch_ids" widget="many2many_tags" readonly="1"/>
+                            <field name="ojt_batch_ids" widget="many2many_tags"/>
                             <field name="department_id"/>
                             <field name="employee_id"/>
                             <field name="mentor_ids" widget="many2many_tags"/>
@@ -184,7 +184,7 @@
                                     <field name="progress_ratio" widget="percentpie"/>
                                 </group>
                             </group>
-                            <field name="participant_ids" readonly="1">
+                            <field name="participant_ids">
                                 <list string="Participants">
                                     <field name="name"/>
                                     <field name="partner_id"/>
@@ -203,7 +203,7 @@
                                     </button>
                                 </div>
                             </group>
-                            <field name="event_link_ids" readonly="1">
+                            <field name="event_link_ids">
                                 <list string="Events">
                                     <field name="name"/>
                                     <field name="event_date"/>

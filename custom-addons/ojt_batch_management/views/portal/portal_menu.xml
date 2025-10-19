@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Add Meeting Attendance to Portal Menu -->
+    <template id="portal_my_home_menu_ojt_meeting" name="Portal My Home Menu - OJT Meeting" inherit_id="portal.portal_my_home" priority="45">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">Meeting Attendance</t>
+                <t t-set="url" t-value="'/my/ojt/meeting'"/>
+                <t t-set="placeholder_count" t-value="'meeting_count'"/>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- Breadcrumb for Meeting Attendance -->
+    <template id="portal_my_home_ojt_meeting" name="My Portal Meeting Attendance" inherit_id="portal.portal_breadcrumbs" priority="45">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li t-if="page_name == 'meeting_attendance' or page_name == 'meeting_detail'" class="breadcrumb-item">
+                <a href="/my/ojt/meeting">Meeting Attendance</a>
+            </li>
+            <li t-if="page_name == 'meeting_detail'" class="breadcrumb-item active">
+                Meeting Detail
+            </li>
+        </xpath>
+    </template>
+</odoo>

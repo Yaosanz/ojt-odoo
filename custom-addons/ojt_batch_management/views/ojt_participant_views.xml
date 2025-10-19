@@ -122,7 +122,7 @@
 
                 <sheet>
                     <div class="oe_title">
-                        <h1><field name="name" readonly="1"/></h1>
+                        <h1><field name="name"/></h1>
                     </div>
 
                     <group>
@@ -134,9 +134,9 @@
                         </group>
                         <group string="OJT Details">
                             <field name="batch_id" required="1"/>
-                            <field name="start_date" readonly="1"/>
-                            <field name="end_date" readonly="1"/>
-                            <field name="state" readonly="1"/>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                            <field name="state"/>
                         </group>
                     </group>
 
@@ -144,19 +144,19 @@
                         <page string="Performance">
                             <group>
                                 <group>
-                                    <field name="attendance_count" readonly="1"/>
-                                    <field name="attendance_rate" readonly="1" widget="percentpie"/>
+                                    <field name="attendance_count"/>
+                                    <field name="attendance_rate" widget="percentpie"/>
                                 </group>
                                 <group>
-                                    <field name="score_avg" readonly="1"/>
-                                    <field name="score_final" readonly="1"/>
+                                    <field name="score_avg"/>
+                                    <field name="score_final"/>
                                     <field name="mentor_score"/>
                                 </group>
                             </group>
                         </page>
 
                         <page string="Assignments">
-                            <field name="assignment_submit_ids" readonly="1">
+                            <field name="assignment_submit_ids">
                                 <list string="Assignment Submissions">
                                     <field name="assignment_id"/>
                                     <field name="submitted_on"/>

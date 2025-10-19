@@ -50,7 +50,7 @@
                                 <field name="max_score"/>
                                 <field name="weight"/>
                                 <field name="attachment_required"/>
-                                <field name="state" readonly="1"/>
+                                <field name="state"/>
                             </group>
                         </group>
                         <notebook>
@@ -58,7 +58,7 @@
                                 <field name="description" placeholder="Assignment description..."/>
                             </page>
                             <page string="Submissions">
-                                <field name="submit_ids" readonly="1">
+                                <field name="submit_ids">
                                     <list string="Submissions">
                                         <field name="participant_id"/>
                                         <field name="submitted_on"/>

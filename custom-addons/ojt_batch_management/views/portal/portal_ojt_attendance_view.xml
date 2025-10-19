@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="portal_ojt_attendance_view" name="Attendance Detail View Portal">
+        <t t-call="portal.portal_layout">
+            <div class="container mt-5 o_portal_attendance_view">
+                <div class="mb-4">
+                    <a href="/my/ojt" class="btn btn-secondary btn-lg">
+                        Back to Dashboard
+                    </a>
+                </div>
+
+                <t t-if="attendance">
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="card shadow-sm mb-4">
+                                <div class="card-header bg-primary text-white">
+                                    <h3 class="mb-0">Attendance Details</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row mb-4">
+                                        <div class="col-md-6">
+                                            <h5 class="text-primary mb-3"><t t-esc="attendance.event_link_id.name"/></h5>
+                                            <p class="mb-2"><strong>Event Date:</strong> <t t-esc="attendance.event_link_id.event_date"/></p>
+                                            <p class="mb-2"><strong>Check-in Time:</strong> <t t-esc="attendance.check_in"/></p>
+                                            <t t-if="attendance.check_out">
+                                                <p class="mb-2"><strong>Check-out Time:</strong> <t t-esc="attendance.check_out"/></p>
+                                            </t>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <p class="mb-2"><strong>Participant:</strong> <t t-esc="attendance.participant_id.name"/></p>
+                                            <p class="mb-2"><strong>Batch:</strong> <t t-esc="attendance.participant_id.batch_id.name"/></p>
+                                            <p class="mb-2"><strong>Method:</strong> <t t-esc="attendance.method"/></p>
+                                            <p class="mb-2"><strong>Status:</strong>
+                                                <span t-attf-class="badge badge-lg badge-{{ attendance.presence == 'present' and 'success' or attendance.presence == 'late' and 'warning' or 'danger' }}">
+                                                    <t t-esc="attendance.presence"/>
+                                                </span>
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <t t-if="attendance.notes">
+                                        <div class="mt-4">
+                                            <h6 class="text-muted mb-2">Additional Notes</h6>
+                                            <div class="bg-light p-3 rounded">
+                                                <t t-esc="attendance.notes"/>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+
+                            <t t-if="attendance.check_in and not attendance.check_out">
+                                <div class="card shadow-sm">
+                                    <div class="card-header bg-warning text-white">
+                                        <h5 class="mb-0">Check-out Action</h5>
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <p class="mb-3">You are currently checked in. Click below to check out.</p>
+                                        <form action="/my/ojt/attendance/checkout" method="post" class="d-inline">
+                                            <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                            <input type="hidden" name="attendance_id" t-att-value="attendance.id"/>
+                                            <button type="submit" class="btn btn-warning btn-lg px-4">
+                                                Check Out Now
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="card shadow-sm mb-4">
+                                <div class="card-header">
+                                    <h6 class="mb-0">Event Information</h6>
+                                </div>
+                                <div class="card-body">
+                                    <p class="mb-2"><strong>Event:</strong> <t t-esc="attendance.event_link_id.name"/></p>
+                                    <p class="mb-2"><strong>Supervisor:</strong> <t t-esc="attendance.event_link_id.supervisor"/></p>
+                                    <p class="mb-2"><strong>Mandatory:</strong>
+                                        <span t-attf-class="badge badge-{{ attendance.event_link_id.is_mandatory and 'danger' or 'secondary' }}">
+                                            <t t-esc="attendance.event_link_id.is_mandatory and 'Yes' or 'No'"/>
+                                        </span>
+                                    </p>
+                                    <t t-if="attendance.event_link_id.description">
+                                        <div class="mt-3">
+                                            <strong>Description:</strong>
+                                            <div class="mt-2 small text-muted">
+                                                <t t-esc="attendance.event_link_id.description"/>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </div>
+                            </div>
+
+                            <div class="card shadow-sm">
+                                <div class="card-header">
+                                    <h6 class="mb-0">Quick Stats</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row text-center">
+                                        <div class="col-6">
+                                            <div class="border-right">
+                                                <h4 class="text-primary mb-1">
+                                                    <t t-esc="attendance.participant_id.attendance_count"/>
+                                                </h4>
+                                                <small class="text-muted">Total</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <h4 class="text-warning mb-1">
+                                                <t t-esc="'{:.1f}'.format(attendance.participant_id.attendance_rate)"/>
+                                            </h4>
+                                            <small class="text-muted">Rate (%)</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <t t-if="success == 'checked_out'">
+                        <div class="alert alert-success alert-dismissible fade show mt-4" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&#215;</span>
+                            </button>
+                        </div>
+                    </t>
+                    <t t-if="error == 'checkout_failed'">
+                        <div class="alert alert-danger alert-dismissible fade show mt-4" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&#215;</span>
+                            </button>
+                        </div>
+                    </t>
+                    <t t-if="error == 'already_checked_out'">
+                        <div class="alert alert-warning alert-dismissible fade show mt-4" role="alert">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&#215;</span>
+                            </button>
+                        </div>
+                    </t>
+                </t>
+
+                <t t-else="">
+                    <div class="alert alert-warning">
+                        <h4 class="alert-heading">Attendance Not Found</h4>
+                        <p>The requested attendance record could not be found.</p>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+</odoo>

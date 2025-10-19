@@ -1,0 +1,543 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- ============================= -->
+    <!--      OJT PORTAL DASHBOARD     -->
+    <!-- ============================= -->
+    <template id="portal_ojt_dashboard" name="OJT Portal Dashboard">
+        <t t-call="portal.portal_layout">
+            <div class="container mt-5 o_portal_my_ojt">
+                <h2 class="mb-4">My OJT Dashboard</h2>
+
+                <t t-if="participant">
+                    <!-- ====================== -->
+                    <!-- Welcome Section -->
+                    <!-- ====================== -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card bg-primary text-white shadow mb-4">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-8">
+                                            <h4 class="mb-1">Welcome back, <t t-esc="participant.name"/>!</h4>
+                                            <p class="mb-0 opacity-75">Track your OJT progress and manage your activities</p>
+                                        </div>
+                                        <div class="col-md-4 text-center">
+                                          
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ====================== -->
+                    <!-- Participant Info Card -->
+                    <!-- ====================== -->
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">Participant Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Name:</strong> <t t-esc="participant.name"/></p>
+                                    <p><strong>Batch:</strong> <t t-esc="participant.batch_id.name"/></p>
+                                    <p><strong>Status:</strong>
+                                        <span t-attf-class="badge badge-{{ participant.state == 'completed' and 'success' or participant.state == 'active' and 'info' or 'secondary' }}">
+                                            <t t-esc="participant.state"/>
+                                        </span>
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Start Date:</strong> <t t-esc="participant.start_date"/></p>
+                                    <p><strong>End Date:</strong> <t t-esc="participant.end_date"/></p>
+                                    <p><strong>Student ID:</strong> <t t-esc="participant.student_id"/></p>
+                                    <p><strong>Attendance Rate:</strong> <t t-esc="'%.1f' % participant.attendance_rate"/>%</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ====================== -->
+                    <!-- Quick Actions Section -->
+                    <!-- ====================== -->
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-header bg-dark text-white">
+                            <h5 class="mb-0">Quick Actions</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <a href="/my/ojt/events" class="btn btn-primary btn-lg w-100">
+                                    
+                                        View Events &amp; Agenda
+                                    </a>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <a href="/my/ojt/attendance" class="btn btn-success btn-lg w-100">
+                                      
+                                        Attendance Records
+                                    </a>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <a href="/my/ojt/meeting" class="btn btn-info btn-lg w-100">
+                                    
+                                        Meeting Attendance
+                                    </a>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <a href="/my/ojt/assignments" class="btn btn-warning btn-lg w-100">
+                                       
+                                        Assignments
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ====================== -->
+                    <!-- Available Assignments Section -->
+                    <!-- ====================== -->
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0">Available Assignments</h5>
+                        </div>
+                        <div class="card-body">
+                            <t t-if="available_assignments">
+                                <div class="row">
+                                    <t t-foreach="available_assignments" t-as="assignment">
+                                        <div class="col-lg-6 col-md-12 mb-3">
+                                            <div class="card shadow-sm h-100 mb-3">
+                                                <div class="card-body">
+                                                    <div class="row align-items-center">
+                                                        <div class="col-md-8">
+                                                            <h6 class="card-title mb-1"><t t-esc="assignment.name"/></h6>
+                                                            <p class="card-text mb-1">
+                                                                <small class="text-muted">
+                                                                    Due: <t t-esc="assignment.deadline"/>
+                                                                </small>
+                                                            </p>
+                                                            <p class="card-text mb-2">
+                                                                <span class="badge badge-info">Available</span>
+                                                            </p>
+                                                        </div>
+                                                        <div class="col-md-4 text-center">
+                                                            <a t-attf-href="/my/ojt/assignment/{{ assignment.id }}" class="btn btn-info btn-sm">
+                                                               Start Assignment
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <div class="text-center py-4">
+                                    
+                                    <p class="text-muted mb-0">All assignments completed!</p>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+
+                    <!-- ====================== -->
+                    <!-- Submitted Assignments Section -->
+                    <!-- ====================== -->
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-header bg-warning text-white">
+                            <h5 class="mb-0">Submitted Assignments</h5>
+                        </div>
+                        <div class="card-body">
+                            <t t-if="assignments">
+                                <div class="row">
+                                    <t t-foreach="assignments" t-as="assignment">
+                                        <div class="col-lg-6 col-md-12 mb-3">
+                                            <div class="card shadow-sm h-100 mb-3">
+                                                <div class="card-body">
+                                                    <div class="row align-items-center">
+                                                        <div class="col-md-8">
+                                                            <h6 class="card-title mb-1"><t t-esc="assignment.assignment_id.name"/></h6>
+                                                            <p class="card-text mb-1">
+                                                                <small class="text-muted">
+                                                                    Submitted: <t t-esc="assignment.submitted_on"/>
+                                                                </small>
+                                                            </p>
+                                                            <p class="card-text mb-2">
+                                                                <span t-attf-class="badge badge-{{ assignment.state == 'scored' and 'success' or assignment.state == 'submitted' and 'info' or 'secondary' }}">
+                                                                    <t t-esc="assignment.state"/>
+                                                                </span>
+                                                                <t t-if="assignment.score">
+                                                                    <span class="ml-2 badge badge-light">
+                                                                        Score: <t t-esc="assignment.score"/>
+                                                                    </span>
+                                                                </t>
+                                                            </p>
+                                                        </div>
+                                                        <div class="col-md-4 text-center">
+                                                            <a t-attf-href="/my/ojt/submission/{{ assignment.id }}" class="btn btn-primary btn-sm">
+                                                                View Submission
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <div class="text-center py-4">
+                                    
+                                    <p class="text-muted mb-0">No assignments submitted yet.</p>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+
+                    <!-- ====================== -->
+                    <!-- Upcoming Events Section -->
+                    <!-- ====================== -->
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">Upcoming Events</h5>
+                        </div>
+                        <div class="card-body">
+                            <t t-if="upcoming_events">
+                                <div class="row">
+                                    <t t-foreach="upcoming_events" t-as="event_link">
+                                        <div class="col-lg-6 col-md-12 mb-3">
+                                            <div class="card shadow-sm h-100 mb-3">
+                                                <div class="card-body">
+                                                    <div class="row align-items-center">
+                                                        <div class="col-md-8">
+                                                            <h6 class="card-title mb-1"><t t-esc="event_link.name"/></h6>
+                                                            <p class="card-text mb-1">
+                                                                <small class="text-muted">
+                                                                    <t t-esc="event_link.event_date"/>
+                                                                </small>
+                                                            </p>
+                                                            <p class="card-text mb-1">
+                                                                <small class="text-muted">
+                                                                    Supervisor: <t t-esc="event_link.supervisor"/>
+                                                                </small>
+                                                            </p>
+                                                            <p class="card-text mb-2">
+                                                                <span t-attf-class="badge badge-{{ event_link.status == 'planned' and 'primary' or event_link.status == 'ongoing' and 'warning' or 'success' }}">
+                                                                    <t t-esc="event_link.status"/>
+                                                                </span>
+                                                                <t t-if="event_link.is_mandatory">
+                                                                    <span class="ml-2 badge badge-danger">Mandatory</span>
+                                                                </t>
+                                                            </p>
+                                                            <t t-if="event_link.description">
+                                                                <p class="card-text mb-2">
+                                                                    <small class="text-muted"><t t-esc="event_link.description"/></small>
+                                                                </p>
+                                                            </t>
+                                                            <t t-if="event_link.online_meeting_url">
+                                                                <p class="card-text mb-2">
+                                                                    <small class="text-info">
+                                                                        Online Meeting Available
+                                                                    </small>
+                                                                </p>
+                                                            </t>
+                                                        </div>
+                                                        <div class="col-md-4 text-center">
+                                                            <form action="/my/ojt/attendance/checkin" method="post" style="display: inline;">
+                                                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                                                <input type="hidden" name="event_link_id" t-att-value="event_link.id"/>
+                                                                <button type="submit" class="btn btn-primary btn-sm">
+                                                                    Check In
+                                                                </button>
+                                                            </form>
+                                                            <t t-if="event_link.online_meeting_url">
+                                                                <br/>
+                                                                <a t-att-href="event_link.online_meeting_url" target="_blank" class="btn btn-info btn-sm mt-1">
+                                                                    Join Meeting
+                                                                </a>
+                                                            </t>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <div class="text-center py-4">
+                                    
+                                    <p class="text-muted mb-0">No upcoming events available.</p>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+
+                    <!-- ====================== -->
+                    <!-- Attendance Records Section -->
+                    <!-- ====================== -->
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-header bg-secondary text-white">
+                            <h5 class="mb-0">Attendance Records</h5>
+                        </div>
+                        <div class="card-body">
+                            <t t-if="attendances">
+                                <div class="row">
+                                    <t t-foreach="attendances" t-as="attendance">
+                                        <div class="col-lg-6 col-md-12 mb-3">
+                                            <div class="card shadow-sm h-100 mb-3">
+                                                <div class="card-body">
+                                                    <div class="row align-items-center">
+                                                        <div class="col-md-8">
+                                                            <h6 class="card-title mb-1"><t t-esc="attendance.event_link_id.name"/></h6>
+                                                            <p class="card-text mb-1">
+                                                                <small class="text-muted">
+                                                                    <t t-esc="attendance.event_link_id.event_date"/>
+                                                                </small>
+                                                            </p>
+                                                            <p class="card-text mb-1">
+                                                                <small class="text-muted">
+                                                                    Check-in: <t t-esc="attendance.check_in"/>
+                                                                    <t t-if="attendance.check_out">
+                                                                        | Check-out: <t t-esc="attendance.check_out"/>
+                                                                    </t>
+                                                                </small>
+                                                            </p>
+                                                            <p class="card-text mb-2">
+                                                                <span t-attf-class="badge badge-{{ attendance.presence == 'present' and 'success' or attendance.presence == 'late' and 'warning' or 'danger' }}">
+                                                                    <t t-esc="attendance.presence"/>
+                                                                </span>
+                                                                <span t-attf-class="badge badge-{{ attendance.method == 'online' and 'info' or 'secondary' }}">
+                                                                    <t t-esc="attendance.method"/>
+                                                                </span>
+                                                            </p>
+                                                            <t t-if="attendance.notes">
+                                                                <p class="card-text mb-2">
+                                                                    <small class="text-muted"><t t-esc="attendance.notes"/></small>
+                                                                </p>
+                                                            </t>
+                                                        </div>
+                                                        <div class="col-md-4 text-center">
+                                                            <a t-attf-href="/my/ojt/attendance/{{ attendance.id }}" class="btn btn-primary btn-sm">
+                                                                View Details
+                                                            </a>
+                                                            <t t-if="not attendance.check_out">
+                                                                <br/>
+                                                                <form action="/my/ojt/attendance/checkout" method="post" style="display: inline;">
+                                                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                                                    <input type="hidden" name="attendance_id" t-att-value="attendance.id"/>
+                                                                    <button type="submit" class="btn btn-warning btn-sm mt-1">
+                                                                        Check Out
+                                                                    </button>
+                                                                </form>
+                                                            </t>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <div class="text-center py-4">
+                                    <p class="text-muted mb-0">No attendance records yet.</p>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+
+                    <!-- ====================== -->
+                    <!-- Progress Tracking Section -->
+                    <!-- ====================== -->
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0">Progress Tracking</h5>
+                        </div>
+                        <div class="card-body">
+                            <t t-if="progress_records">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Week</th>
+                                                <th>Evaluation</th>
+                                                <th>Progress (%)</th>
+                                                <th>Date Recorded</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="progress_records" t-as="progress">
+                                                <tr>
+                                                    <td><t t-esc="progress.week"/></td>
+                                                    <td>
+                                                        <span t-attf-class="badge badge-{{ progress.evaluation == 'excellent' and 'success' or progress.evaluation == 'good' and 'info' or progress.evaluation == 'average' and 'warning' or 'danger' }}">
+                                                            <t t-esc="progress.evaluation"/>
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <div class="progress" style="width: 100px;">
+                                                            <div class="progress-bar" t-attf-style="width: {{ progress.progress_percentage }}%">
+                                                                <t t-esc="progress.progress_percentage"/>%
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td><t t-esc="progress.date_recorded"/></td>
+                                                    <td>
+                                                        <a t-attf-href="/my/ojt/progress/{{ progress.id }}" class="btn btn-sm btn-primary">View Details</a>
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <p class="text-muted mb-0">No progress records yet.</p>
+                            </t>
+                        </div>
+                    </div>
+
+                    <!-- ====================== -->
+                    <!-- Available Certificates Section -->
+                    <!-- ====================== -->
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-header bg-warning text-white">
+                            <h5 class="mb-0">Available Certificates</h5>
+                        </div>
+                        <div class="card-body">
+                            <t t-if="available_certificates">
+                                <div class="row">
+                                    <t t-foreach="available_certificates" t-as="cert">
+                                        <div class="col-lg-6 col-md-12 mb-3">
+                                            <div class="card shadow-sm h-100 mb-3">
+                                                <div class="card-body">
+                                                    <div class="row align-items-center">
+                                                        <div class="col-md-8">
+                                                            <h6 class="card-title mb-1"><t t-esc="cert.name"/></h6>
+                                                            <p class="card-text mb-1">
+                                                                <small class="text-muted">
+                                                                    Status: <t t-esc="cert.state"/>
+                                                                </small>
+                                                            </p>
+                                                            <p class="card-text mb-2">
+                                                                <span class="badge badge-warning">Pending Issuance</span>
+                                                            </p>
+                                                        </div>
+                                                        <div class="col-md-4 text-center">
+                                                            <a t-attf-href="/my/ojt/certificate/{{ cert.id }}" class="btn btn-warning btn-sm">
+                                                                View Details
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <div class="text-center py-4">
+                                    <p class="text-muted mb-0">No certificates available for issuance.</p>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+
+                    <!-- ====================== -->
+                    <!-- Issued Certificates Section -->
+                    <!-- ====================== -->
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">Issued Certificates</h5>
+                        </div>
+                        <div class="card-body">
+                            <t t-if="certificates">
+                                <div class="row">
+                                    <t t-foreach="certificates" t-as="cert">
+                                        <div class="col-lg-6 col-md-12 mb-3">
+                                            <div class="card shadow-sm h-100 mb-3">
+                                                <div class="card-body">
+                                                    <div class="row align-items-center">
+                                                        <div class="col-md-8">
+                                                            <h6 class="card-title mb-1"><t t-esc="cert.name"/></h6>
+                                                            <p class="card-text mb-1">
+                                                                <small class="text-muted">
+                                                                    Issued: <t t-esc="cert.issue_date"/>
+                                                                </small>
+                                                            </p>
+                                                            <p class="card-text mb-2">
+                                                                <span class="badge badge-success">Issued</span>
+                                                                <t t-if="cert.grade">
+                                                                    <span class="ml-2 badge badge-light">
+                                                                        Grade: <t t-esc="cert.grade"/>
+                                                                    </span>
+                                                                </t>
+                                                                <t t-if="cert.final_score">
+                                                                    <span class="ml-2 badge badge-light">
+                                                                        Score: <t t-esc="cert.final_score"/>%
+                                                                    </span>
+                                                                </t>
+                                                            </p>
+                                                        </div>
+                                                        <div class="col-md-4 text-center">
+                                                            <a t-attf-href="/my/ojt/certificate/{{ cert.id }}/download" class="btn btn-success btn-sm">
+                                                                Download
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <div class="text-center py-4">
+                                    
+                                    <p class="text-muted mb-0">No certificates issued yet.</p>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+
+                </t>
+                <t t-else="">
+                    <div class="alert alert-warning">
+                        <h4 class="alert-heading">Not Enrolled</h4>
+                        <p>You are not currently enrolled in any OJT program.</p>
+                    </div>
+                </t>
+
+                <!-- Success/Error Messages -->
+                <t t-if="success == 'checked_in'">
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <strong>Success!</strong> You have successfully checked in for the event.
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&#215;</span>
+                        </button>
+                    </div>
+                </t>
+                <t t-if="error == 'already_checked_in'">
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <strong>Already Checked In</strong> You have already checked in for this event.
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&#215;</span>
+                        </button>
+                    </div>
+                </t>
+                <t t-if="error == 'checkin_failed'">
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>Error!</strong> Check-in failed. Please try again.
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&#215;</span>
+                        </button>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+</odoo>

@@ -42,9 +42,9 @@
                         </div>
                         <group>
                             <group>
-                                <field name="submitted_on" readonly="1"/>
-                                <field name="late" readonly="1"/>
-                                <field name="state" readonly="1"/>
+                                <field name="submitted_on"/>
+                                <field name="late"/>
+                                <field name="state"/>
                             </group>
                             <group>
                                 <field name="score"/>

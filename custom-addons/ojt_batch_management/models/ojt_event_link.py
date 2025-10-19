@@ -23,6 +23,7 @@ class OjtEventLink(models.Model):
         ('ongoing', 'Ongoing'),
         ('done', 'Done'),
     ], string="Status", default='planned', tracking=True)
+    meeting_attendance_ids = fields.One2many('ojt.meeting.attendance', 'event_link_id', string='Meeting Attendances')
     company_id = fields.Many2one('res.company', string='Company', required=True,
                                  default=lambda self: self.env.company)
 

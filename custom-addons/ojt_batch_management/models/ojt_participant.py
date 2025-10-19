@@ -128,6 +128,29 @@ class OjtParticipant(models.Model):
 
         record = super().create(vals)
 
+        # Auto-generate student ID if not set
+        if record.partner_id and not record.partner_id.ref:
+            # Generate student ID: batch_name + random unique code
+            batch_name = record.batch_id.name or 'BATCH'
+            # Clean batch name for ID generation (remove spaces, special chars)
+            batch_prefix = ''.join(e for e in batch_name.upper() if e.isalnum())[:4]  # Max 4 chars
+            if not batch_prefix:
+                batch_prefix = 'BATCH'
+
+            # Generate unique random code (6 digits)
+            import random
+            while True:
+                random_code = f"{random.randint(100000, 999999)}"
+                student_id = f"{batch_prefix}-{random_code}"
+                # Check uniqueness across all participants
+                existing = self.env['res.partner'].sudo().search([
+                    ('ref', '=', student_id)
+                ], limit=1)
+                if not existing:
+                    break
+
+            record.partner_id.sudo().write({'ref': student_id})
+
         # Auto-create portal user if email exists
         try:
             group_portal = self.env.ref('base.group_portal')

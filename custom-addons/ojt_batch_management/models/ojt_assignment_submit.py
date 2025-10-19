@@ -21,6 +21,7 @@ class OjtAssignmentSubmit(models.Model):
     score = fields.Float(string='Score')
     reviewer_id = fields.Many2one('res.users', string='Reviewer', tracking=True)
     feedback = fields.Html(string='Feedback')
+    participant_feedback = fields.Text(string='Participant Feedback', tracking=True)
     late = fields.Boolean(string='Late Submission', compute='_compute_late', store=True)
     state = fields.Selection([
         ('draft', 'Draft'),

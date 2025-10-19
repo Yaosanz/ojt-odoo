@@ -86,7 +86,7 @@
                 <sheet>
                     <div class="oe_title">
                         <h1>
-                            <field name="participant_id" readonly="1"/>
+                            <field name="participant_id"/>
                             <span> - Week </span>
                             <field name="week"/>
                         </h1>
@@ -94,7 +94,7 @@
                     <group>
                         <group string="Progress Details">
                             <field name="participant_id" required="1"/>
-                            <field name="batch_id" readonly="1"/>
+                            <field name="batch_id"/>
                             <field name="week" required="1"/>
                             <field name="date_recorded"/>
                         </group>
