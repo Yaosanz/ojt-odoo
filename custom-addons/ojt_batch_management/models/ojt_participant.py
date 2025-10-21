@@ -128,6 +128,10 @@ class OjtParticipant(models.Model):
 
         record = super().create(vals)
 
+        # Update batch participant count
+        if record.batch_id:
+            record.batch_id._compute_counts()
+
         # Auto-generate student ID if not set
         if record.partner_id and not record.partner_id.ref:
             # Generate student ID: batch_name + random unique code
@@ -182,3 +186,25 @@ class OjtParticipant(models.Model):
 
     def action_left(self):
         self.write({'state': 'left'})
+
+    def get_portal_url(self):
+        """Get portal URL for the participant"""
+        self.ensure_one()
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url', 'http://localhost:8069')
+        return f"{base_url}/my/ojt/dashboard/{self.portal_token}"
+
+    def get_temporary_password(self):
+        """Get temporary password for the participant (for email template)"""
+        self.ensure_one()
+        # Generate a temporary password for new users
+        if self.user_id:
+            # If user exists, generate a random temporary password
+            import random
+            import string
+            temp_password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+            # Set the temporary password
+            self.user_id.sudo().write({'password': temp_password})
+            return temp_password
+        else:
+            # Fallback if no user yet
+            return "Welome User"

@@ -61,9 +61,9 @@
               action="action_ojt_event_link"/>
 
     <!-- Submenu Website Recruitment -->
-    <menuitem id="menu_website_recruitment"
+    <!-- <menuitem id="menu_website_recruitment"
               name="Website Recruitment"
               parent="menu_ojt_root"
               sequence="10"
-              action="action_website_recruitment"/>
+              action="action_website_recruitment"/> -->
 </odoo>

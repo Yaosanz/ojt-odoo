@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
+    <!-- Add OJT Dashboard to Portal Menu -->
+    <template id="portal_my_home_menu_ojt" name="Portal My Home Menu - OJT" inherit_id="portal.portal_my_home" priority="45">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">OJT Dashboard</t>
+                <t t-set="url" t-value="'/my/ojt'"/>
+                <t t-set="placeholder_count" t-value="'ojt_count'"/>
+            </t>
+        </xpath>
+    </template>
+
     <!-- Add Meeting Attendance to Portal Menu -->
     <template id="portal_my_home_menu_ojt_meeting" name="Portal My Home Menu - OJT Meeting" inherit_id="portal.portal_my_home" priority="45">
         <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">

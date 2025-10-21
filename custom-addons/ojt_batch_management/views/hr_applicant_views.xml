@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Inherit HR Applicant Form to Add OJT Enrollment Button -->
+        <record id="view_hr_applicant_form_inherit_ojt" model="ir.ui.view">
+            <field name="name">hr.applicant.form.inherit.ojt</field>
+            <field name="model">hr.applicant</field>
+            <field name="inherit_id" ref="hr_recruitment.hr_applicant_view_form"/>
+            <field name="arch" type="xml">
+
+                <!-- Add OJT Batch field -->
+                <xpath expr="//sheet" position="inside">
+                    <group name="ojt_info" string="OJT Information">
+                        <field name="ojt_batch_id" invisible="not show_ojt_batch"/>
+                    </group>
+                </xpath>
+
+                <!-- Add Enroll OJT button -->
+                <xpath expr="//header" position="inside">
+                    <button name="action_enroll_ojt"
+                            string="Enroll OJT"
+                            type="object"
+                            class="btn-primary"
+                            invisible="not show_enroll_button"/>
+                </xpath>
+
+            </field>
+        </record>
+    </data>
+</odoo>

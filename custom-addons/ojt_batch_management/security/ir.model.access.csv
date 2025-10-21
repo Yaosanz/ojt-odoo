@@ -21,3 +21,10 @@ access_ojt_meeting_attendance_user,ojt.meeting.attendance.user,model_ojt_meeting
 access_ojt_meeting_attendance_portal,ojt.meeting.attendance.portal,model_ojt_meeting_attendance,base.group_portal,1,0,0,0
 access_ojt_meeting_attendee_user,ojt.meeting.attendee.user,model_ojt_meeting_attendee,base.group_user,1,1,1,1
 access_ojt_meeting_attendee_portal,ojt.meeting.attendee.portal,model_ojt_meeting_attendee,base.group_portal,1,0,0,0
+access_ojt_batch_portal,access_ojt_batch_portal,model_ojt_batch,base.group_portal,1,0,0,0
+access_ojt_participant_portal,access_ojt_participant_portal,model_ojt_participant,base.group_portal,1,0,0,0
+access_ojt_event_link_portal,access_ojt_event_link_portal,model_ojt_event_link,base.group_portal,1,0,0,0
+access_ojt_attendance_portal,access_ojt_attendance_portal,model_ojt_attendance,base.group_portal,1,0,0,0
+access_ojt_progress_portal,access_ojt_progress_portal,model_ojt_progress,base.group_portal,1,0,0,0
+access_ojt_certificate_portal,access_ojt_certificate_portal,model_ojt_certificate,base.group_portal,1,0,0,0
+access_ojt_assignment_portal,access_ojt_assignment_portal,model_ojt_assignment,base.group_portal,1,0,0,0

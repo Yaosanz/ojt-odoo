@@ -69,6 +69,7 @@ class OjtBatch(models.Model):
     completed_count = fields.Integer(compute='_compute_state_counts', store=True)
     cancelled_count = fields.Integer(compute='_compute_state_counts', store=True)
 
+    @api.depends('participant_ids')
     def _compute_counts(self):
         for record in self:
             record.participant_count = len(record.participant_ids)
@@ -164,7 +165,6 @@ class OjtBatch(models.Model):
             # Create certificate
             cert_vals = {
                 'participant_id': participant.id,
-                'qr_token': str(uuid.uuid4()),
                 'state': 'draft',  # Start as draft, then issue
             }
             certificate = self.env['ojt.certificate'].create(cert_vals)

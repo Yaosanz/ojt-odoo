@@ -1,72 +1,44 @@
-# TODO for OJT Portal Enhancement
+# OJT Recruitment Integration Tasks
 
-## Step 1: Test Current Dashboard ✓
-- Start Odoo server if not running ✓
-- Launch browser to /my/ojt ✓ (redirects to login, indicating server is running)
-- Verify existing sections (participant info, performance, assignments, certificates, progress) display correctly
+## Overview
+Integrate OJT module with built-in recruitment module in Odoo 18. Add "Enroll OJT" button, new "On The Job Training" stage, and automatic participant creation with activation email.
 
-## Step 2: Update Controller to Fetch Attendances ✓
-- Modify custom-addons/ojt_batch_management/controllers/portal.py ✓
-- In portal_my_ojt method, fetch attendances for the participant ✓
-- Pass attendances to the template ✓
+## Tasks
 
-## Step 3: Add Attendance Records Section to Dashboard Template ✓
-- Edit custom-addons/ojt_batch_management/views/portal/ojt_portal_templates.xml ✓
-- Add new "Attendance Records" card section after Progress Tracking ✓
-- Display event name, date, presence, notes in a table format ✓
+### 1. Create Recruitment Stage Data
+- [x] Create `data/hr_recruitment_stage.xml` with "On The Job Training" stage
+- [x] Ensure stage sequence and proper configuration
 
-## Step 4: Create Detailed Portal Routes ✓
-- Add new routes in custom-addons/ojt_batch_management/controllers/portal.py: ✓
-  - /my/ojt/assignment/<int:assignment_id> - View assignment details and submission ✓
-  - /my/ojt/attendance/<int:attendance_id> - View attendance details ✓
-  - /my/ojt/progress/<int:progress_id> - View progress record details ✓
-  - /my/ojt/submission/<int:submission_id> - View submission details ✓
+### 2. Create Account Activation Email Template
+- [x] Create email template for account activation in `data/mail_template.xml`
+- [x] Template should include login credentials and activation link
 
-## Step 5: Create Templates for Detailed Views ✓
-- Add new templates in custom-addons/ojt_batch_management/views/portal/ojt_portal_templates.xml: ✓
-  - portal_ojt_assignment_view ✓
-  - portal_ojt_attendance_view ✓
-  - portal_ojt_progress_view ✓
-  - portal_ojt_submission_view ✓
-- Each template should show relevant details and allow viewing/editing if appropriate ✓
+### 3. Add Enroll OJT Button to Applicant Form
+- [x] Create `views/hr_applicant_views.xml` to inherit hr.applicant form
+- [x] Add "Enroll OJT" action button in header
+- [x] Button should be visible when applicant has OJT batch selected
 
-## Step 6: Update Links in Dashboard ✓
-- Ensure all sections in dashboard link to their detailed views where appropriate ✓
-- Update assignment, attendance, progress, submission links to point to new routes ✓
+### 4. Modify HR Applicant Model
+- [x] Update `models/hr_applicant.py` to handle stage changes
+- [x] Add method to enroll OJT when stage is set to "On The Job Training"
+- [x] Trigger participant creation and email sending
 
-## Step 7: Test Updated Dashboard and Views ✓
-- Test all new sections and detailed views ✓
-- Verify data display, navigation, and functionality ✓
-- Check for any errors in console logs ✓
-- Odoo server restarted and login page accessible ✓
+### 5. Update Manifest
+- [x] Add new data files to `__manifest__.py`
+- [x] Ensure proper loading order
 
-## Step 8: Fix Performance Overview Card ✓
-- Correct the "Assignments Completed" card to display attendance_count instead of assignment_count ✓
-- Update the description text to "Total attendances" ✓
-- Verify the change in the template ✓
+### 6. Testing
+- [ ] Test stage transition triggers enrollment
+- [ ] Verify participant creation
+- [ ] Check email sending
+- [ ] Validate portal user creation
 
-## Step 9: Add Student ID Auto-Generation ✓
-- Modify ojt_participant.py create method to auto-generate student ID ✓
-- Format: batch_code + 3-digit sequence (e.g., BATCH001) ✓
-- Ensure unique per batch ✓
+## Dependencies
+- hr_recruitment module
+- portal module
+- mail module
 
-## Step 10: Split Portal Templates into Separate Files ✓
-- Create separate XML files in views/portal/ directory: ✓
-  - portal_ojt_dashboard.xml ✓
-  - portal_ojt_assignment_view.xml ✓
-  - portal_ojt_attendance_view.xml ✓
-  - portal_ojt_progress_view.xml ✓
-  - portal_ojt_submission_view.xml ✓
-  - portal_ojt_certificate_view.xml ✓
-
-## Step 11: Add Upcoming Events Section with Check-In ✓
-- Add "Upcoming Events" section to dashboard ✓
-- Display events with check-in buttons ✓
-- Implement check-in functionality in controller ✓
-- Add success/error messages ✓
-
-## Step 12: Test New Features ✓
-- Test student ID generation when creating participants ✓
-- Verify all portal views load properly ✓
-- Test attendance check-in from portal ✓
-- Check for any errors in console logs ✓
+## Notes
+- Use Odoo 18 API
+- Ensure compatibility with PostgreSQL 16
+- Follow existing code patterns in the module

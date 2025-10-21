@@ -28,6 +28,8 @@
         'data/ojt_sequence.xml',
         'data/email_template_certificate.xml',
         'data/email_template_proctoring_scheduled.xml',
+        'data/hr_recruitment_stage.xml',
+        'data/email_template.xml',
         
         # Reports
         'report/report_certificate.xml',
@@ -50,7 +52,9 @@
         'views/ojt_assignment_submit_views.xml',
         'views/ojt_event_link_views.xml',
         'views/website_recruitment_templates.xml',
-        
+        'views/website_signup_templates.xml',
+        'views/hr_applicant_views.xml',
+
         # New feature views
         'views/ojt_meeting_attendance_views.xml',
         'views/ojt_gamification_views.xml',

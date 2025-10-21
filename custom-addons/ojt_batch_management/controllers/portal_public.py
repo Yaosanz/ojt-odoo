@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
-from odoo import http, fields
+from odoo import http, fields, _
 from odoo.http import request
+from odoo.exceptions import AccessError, ValidationError
+from odoo.addons.auth_signup.controllers.main import AuthSignupHome
 from odoo.addons.portal.controllers.portal import CustomerPortal
 import base64
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class OjtPortalPublic(http.Controller):
@@ -121,11 +126,196 @@ class OjtPortalPublic(http.Controller):
             ])
         return request.not_found()
 
-    # 🔹 Tambahan: QR Tool Page
+    # 🔹 QR Tool Page
     @http.route('/ojt/qr/tool', type='http', auth='public', website=True)
     def qr_tool_page(self, **kwargs):
         """Public page for QR Code Generator & Scanner"""
         return request.render('ojt_batch_management.qr_tool_page', {})
+
+    # 🔹 Forgot Password Page
+    @http.route('/ojt/forgot-password', type='http', auth='public', website=True, methods=['GET', 'POST'])
+    def forgot_password(self, **kwargs):
+        """Forgot password page for OJT participants"""
+        error = None
+        success = None
+
+        if request.httprequest.method == 'POST':
+            email = kwargs.get('email', '').strip()
+            if not email:
+                error = "Please enter your email address."
+            else:
+                # Check if email exists in participants
+                participant = request.env['ojt.participant'].sudo().search([
+                    ('partner_id.email', '=', email),
+                    ('state', 'in', ['active', 'completed'])
+                ], limit=1)
+
+                if participant and participant.user_id:
+                    try:
+                        # Send password reset email
+                        participant.user_id.sudo().action_reset_password()
+                        success = "Password reset instructions have been sent to your email."
+                        _logger.info(f"Password reset requested for participant {participant.id} ({email})")
+                    except Exception as e:
+                        _logger.error(f"Failed to send password reset for {email}: {e}")
+                        error = "Failed to send password reset email. Please try again."
+                else:
+                    # Don't reveal if email exists or not for security
+                    success = "If your email is registered, password reset instructions have been sent."
+
+        return request.render('ojt_batch_management.forgot_password', {
+            'error': error,
+            'success': success,
+        })
+
+    # 🔹 Sign Up Page
+    @http.route('/ojt/signup', type='http', auth='public', website=True, methods=['GET', 'POST'])
+    def ojt_signup(self, **kwargs):
+        """OJT participant signup page"""
+        error = {}
+        success = None
+
+        if request.httprequest.method == 'POST':
+            # Validate required fields
+            name = kwargs.get('name', '').strip()
+            email = kwargs.get('email', '').strip()
+            phone = kwargs.get('phone', '').strip()
+            batch_id = kwargs.get('batch_id', '').strip()
+
+            if not name:
+                error['name'] = "Name is required."
+            if not email:
+                error['email'] = "Email is required."
+            elif not self._is_valid_email(email):
+                error['email'] = "Please enter a valid email address."
+            if not batch_id:
+                error['batch_id'] = "Please select an OJT batch."
+
+            # Check if email already exists
+            if email:
+                existing_user = request.env['res.users'].sudo().search([('login', '=', email)], limit=1)
+                existing_participant = request.env['ojt.participant'].sudo().search([
+                    ('partner_id.email', '=', email)
+                ], limit=1)
+
+                if existing_user or existing_participant:
+                    error['email'] = "This email is already registered."
+
+            if not error:
+                try:
+                    # Create partner
+                    partner_vals = {
+                        'name': name,
+                        'email': email,
+                        'phone': phone,
+                    }
+                    partner = request.env['res.partner'].sudo().create(partner_vals)
+
+                    # Create participant
+                    participant_vals = {
+                        'partner_id': partner.id,
+                        'batch_id': int(batch_id),
+                        'state': 'draft',  # Will be activated after email verification
+                    }
+                    participant = request.env['ojt.participant'].sudo().create(participant_vals)
+
+                    # Send activation email
+                    self._send_activation_email(participant)
+
+                    success = "Registration successful! Please check your email for activation instructions."
+                    _logger.info(f"New OJT participant registered: {participant.id} ({email})")
+
+                except Exception as e:
+                    _logger.error(f"Failed to register participant {email}: {e}")
+                    error['general'] = "Registration failed. Please try again."
+
+        # Get available batches
+        available_batches = request.env['ojt.batch'].sudo().search([
+            ('state', 'in', ['recruit', 'ongoing']),
+            ('active', '=', True)
+        ])
+
+        return request.render('ojt_batch_management.signup', {
+            'error': error,
+            'success': success,
+            'available_batches': available_batches,
+        })
+
+    # 🔹 Email Activation
+    @http.route('/ojt/activate/<string:token>', type='http', auth='public', website=True)
+    def activate_account(self, token, **kwargs):
+        """Activate participant account via email link"""
+        participant = request.env['ojt.participant'].sudo().search([
+            ('portal_token', '=', token),
+            ('state', '=', 'draft')
+        ], limit=1)
+
+        if not participant:
+            return request.render('ojt_batch_management.activation_result', {
+                'success': False,
+                'message': "Invalid or expired activation link."
+            })
+
+        try:
+            # Activate participant and create user
+            participant.sudo().write({'state': 'active'})
+
+            # Create portal user if not exists
+            if not participant.user_id and participant.partner_id.email:
+                group_portal = request.env.ref('base.group_portal')
+                existing_user = request.env['res.users'].sudo().search([
+                    ('login', '=', participant.partner_id.email)
+                ], limit=1)
+
+                if not existing_user:
+                    user_vals = {
+                        'name': participant.partner_id.name,
+                        'login': participant.partner_id.email,
+                        'email': participant.partner_id.email,
+                        'partner_id': participant.partner_id.id,
+                        'groups_id': [(6, 0, [group_portal.id])],
+                    }
+                    user = request.env['res.users'].sudo().create(user_vals)
+
+                    # Send welcome email with login details
+                    self._send_welcome_email(user, participant)
+
+            _logger.info(f"Participant account activated: {participant.id}")
+
+            return request.render('ojt_batch_management.activation_result', {
+                'success': True,
+                'message': "Your account has been successfully activated! You can now log in.",
+                'login_url': '/web/login',
+            })
+
+        except Exception as e:
+            _logger.error(f"Failed to activate participant {participant.id}: {e}")
+            return request.render('ojt_batch_management.activation_result', {
+                'success': False,
+                'message': "Activation failed. Please contact support."
+            })
+
+    def _is_valid_email(self, email):
+        """Basic email validation"""
+        import re
+        pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        return re.match(pattern, email) is not None
+
+    def _send_activation_email(self, participant):
+        """Send account activation email"""
+        try:
+            template = request.env.ref('ojt_batch_management.email_template_ojt_activation')
+            template.sudo().send_mail(participant.id, force_send=True)
+        except Exception as e:
+            _logger.error(f"Failed to send activation email to {participant.partner_id.email}: {e}")
+
+    def _send_welcome_email(self, user, participant):
+        """Send welcome email with login details"""
+        try:
+            template = request.env.ref('ojt_batch_management.email_template_ojt_welcome')
+            template.sudo().send_mail(participant.id, force_send=True)
+        except Exception as e:
+            _logger.error(f"Failed to send welcome email to {user.email}: {e}")
 
 
 class OjtPortal(CustomerPortal):
