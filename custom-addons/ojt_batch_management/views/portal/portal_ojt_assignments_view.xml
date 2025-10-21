@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- ============================= -->
+    <!--      OJT PORTAL ASSIGNMENTS PAGE     -->
+    <!-- ============================= -->
+    <template id="portal_ojt_assignments" name="OJT Portal Assignments">
+        <t t-call="portal.portal_layout">
+            <div class="container mt-5 o_portal_my_ojt">
+                <h2 class="mb-4">Assignments</h2>
+
+                <t t-if="participant">
+                    <!-- ====================== -->
+                    <!-- Assignments Summary -->
+                    <!-- ====================== -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="card shadow h-100 mb-3">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                                Available Assignments
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                <t t-esc="len(available_assignments or [])"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card shadow h-100 mb-3">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                                Submitted Assignments
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                <t t-esc="len(assignments or [])"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card shadow h-100 mb-3">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                                Completed Assignments
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                <t t-esc="len([a for a in (assignments or []) if a.state == 'scored'])"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ====================== -->
+                    <!-- Available Assignments Section -->
+                    <!-- ====================== -->
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="mb-0">Available Assignments</h5>
+                        </div>
+                        <div class="card-body">
+                            <t t-if="available_assignments and len(available_assignments) > 0">
+                                <div class="row">
+                                    <t t-foreach="available_assignments" t-as="assignment">
+                                        <div class="col-lg-6 col-md-12 mb-3">
+                                            <div class="card shadow-sm h-100 mb-3">
+                                                <div class="card-body">
+                                                    <div class="row align-items-center">
+                                                        <div class="col-md-8">
+                                                            <h6 class="card-title mb-1"><t t-esc="assignment.name"/></h6>
+                                                            <p class="card-text mb-1">
+                                                                <small class="text-muted">
+                                                                    Due: <t t-esc="assignment.deadline"/>
+                                                                </small>
+                                                            </p>
+                                                            <p class="card-text mb-2">
+                                                                <span class="badge badge-info">Available</span>
+                                                            </p>
+                                                            <t t-if="assignment.description">
+                                                                <p class="card-text mb-2">
+                                                                    <small class="text-muted"><t t-esc="assignment.description"/></small>
+                                                                </p>
+                                                            </t>
+                                                        </div>
+                                                        <div class="col-md-4 text-center">
+                                                            <a t-attf-href="/my/ojt/assignment/{{ assignment.id }}" class="btn btn-info btn-sm">
+                                                                Start Assignment
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <div class="text-center py-4">
+                                    <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                                    <p class="text-muted mb-0">All assignments completed!</p>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+
+                    <!-- ====================== -->
+                    <!-- Submitted Assignments Section -->
+                    <!-- ====================== -->
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-header bg-warning text-white">
+                            <h5 class="mb-0">Submitted Assignments</h5>
+                        </div>
+                        <div class="card-body">
+                            <t t-if="assignments and len(assignments) > 0">
+                                <div class="row">
+                                    <t t-foreach="assignments" t-as="assignment">
+                                        <div class="col-lg-6 col-md-12 mb-3">
+                                            <div class="card shadow-sm h-100 mb-3">
+                                                <div class="card-body">
+                                                    <div class="row align-items-center">
+                                                        <div class="col-md-8">
+                                                            <h6 class="card-title mb-1"><t t-esc="assignment.assignment_id.name"/></h6>
+                                                            <p class="card-text mb-1">
+                                                                <small class="text-muted">
+                                                                    Submitted: <t t-esc="assignment.submitted_on"/>
+                                                                </small>
+                                                            </p>
+                                                            <p class="card-text mb-2">
+                                                                <span t-attf-class="badge badge-{{ assignment.state == 'scored' and 'success' or assignment.state == 'submitted' and 'info' or 'secondary' }}">
+                                                                    <t t-esc="assignment.state"/>
+                                                                </span>
+                                                                <t t-if="assignment.score">
+                                                                    <span class="ml-2 badge badge-light">
+                                                                        Score: <t t-esc="assignment.score"/>
+                                                                    </span>
+                                                                </t>
+                                                            </p>
+                                                            <t t-if="assignment.assignment_id.description">
+                                                                <p class="card-text mb-2">
+                                                                    <small class="text-muted"><t t-esc="assignment.assignment_id.description"/></small>
+                                                                </p>
+                                                            </t>
+                                                        </div>
+                                                        <div class="col-md-4 text-center">
+                                                            <a t-attf-href="/my/ojt/submission/{{ assignment.id }}" class="btn btn-primary btn-sm">
+                                                                View Submission
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <div class="text-center py-4">
+                                    <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
+                                    <p class="text-muted mb-0">No assignments submitted yet.</p>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+                </t>
+
+                <t t-else="">
+                    <div class="alert alert-warning">
+                        <h4 class="alert-heading">Not Enrolled</h4>
+                        <p>You are not currently enrolled in any OJT program.</p>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+</odoo>

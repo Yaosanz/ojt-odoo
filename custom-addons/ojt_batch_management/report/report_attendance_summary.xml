@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_attendance_summary_template">
+        <t t-call="web.external_layout">
+            <div class="page">
+                <!-- Header -->
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <h1 style="color: #007bff; font-size: 24px;">Attendance Summary Report</h1>
+                    <h2 style="color: #333;"><t t-esc="batch_name"/></h2>
+                    <p style="font-size: 14px; color: #666;">
+                        Period: <t t-esc="start_date"/> to <t t-esc="end_date"/>
+                    </p>
+                </div>
+
+                <!-- Summary Statistics -->
+                <div style="margin: 30px 0;">
+                    <h3>Summary Statistics</h3>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ddd; background-color: #f8f9fa; width: 25%;"><strong>Total Participants:</strong></td>
+                            <td style="padding: 10px; border: 1px solid #ddd;"><t t-esc="total_participants"/></td>
+                            <td style="padding: 10px; border: 1px solid #ddd; background-color: #f8f9fa; width: 25%;"><strong>Total Events:</strong></td>
+                            <td style="padding: 10px; border: 1px solid #ddd;"><t t-esc="total_events"/></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ddd; background-color: #f8f9fa;"><strong>Average Attendance:</strong></td>
+                            <td style="padding: 10px; border: 1px solid #ddd;"><t t-esc="avg_attendance"/>%</td>
+                            <td style="padding: 10px; border: 1px solid #ddd; background-color: #f8f9fa;"><strong>Perfect Attendance:</strong></td>
+                            <td style="padding: 10px; border: 1px solid #ddd;"><t t-esc="perfect_attendance_count"/> participants</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- Attendance by Event -->
+                <div style="margin: 30px 0;">
+                    <h3>Attendance by Event</h3>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                        <thead>
+                            <tr style="background-color: #f8f9fa;">
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Event</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Date</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Present</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Late</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Absent</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Rate (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="event_attendance" t-as="event">
+                                <tr>
+                                    <td style="padding: 8px; border: 1px solid #ddd;"><t t-esc="event.name"/></td>
+                                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center;"><t t-esc="event.date"/></td>
+                                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center;"><t t-esc="event.present"/></td>
+                                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center;"><t t-esc="event.late"/></td>
+                                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center;"><t t-esc="event.absent"/></td>
+                                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center;"><t t-esc="event.rate"/>%</td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Individual Attendance -->
+                <div style="margin: 30px 0;">
+                    <h3>Individual Attendance Report</h3>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                        <thead>
+                            <tr style="background-color: #f8f9fa;">
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: left;">Participant</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Student ID</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Present</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Late</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Absent</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Total Events</th>
+                                <th style="padding: 8px; border: 1px solid #ddd; text-align: center;">Attendance Rate (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="participant_attendance" t-as="participant">
+                                <tr>
+                                    <td style="padding: 8px; border: 1px solid #ddd;"><t t-esc="participant.name"/></td>
+                                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center;"><t t-esc="participant.student_id"/></td>
+                                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center;"><t t-esc="participant.present"/></td>
+                                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center;"><t t-esc="participant.late"/></td>
+                                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center;"><t t-esc="participant.absent"/></td>
+                                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center;"><t t-esc="participant.total"/></td>
+                                    <td style="padding: 8px; border: 1px solid #ddd; text-align: center;"><t t-esc="participant.rate"/>%</td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Footer -->
+                <div style="text-align: center; margin-top: 50px; border-top: 1px solid #ddd; padding-top: 20px;">
+                    <p style="font-size: 12px; color: #666;">
+                        Report generated on <t t-esc="current_date"/><br/>
+                        OJT Management System
+                    </p>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>

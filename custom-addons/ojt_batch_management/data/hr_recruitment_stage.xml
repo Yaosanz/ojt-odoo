@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- On The Job Training Stage -->
+        <record id="hr_recruitment_stage_ojt" model="hr.recruitment.stage">
+            <field name="name">On The Job Training</field>
+            <field name="sequence">10</field>
+            <field name="hired_stage">True</field>
+            <field name="fold">False</field>
+            <field name="requirements">Candidate has been selected for OJT program</field>
+        </record>
+    </data>
+</odoo>

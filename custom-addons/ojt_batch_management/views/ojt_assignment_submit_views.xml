@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Assignment Submit List View -->
+        <record id="view_ojt_assignment_submit_tree" model="ir.ui.view">
+            <field name="name">ojt.assignment.submit.tree</field>
+            <field name="model">ojt.assignment.submit</field>
+            <field name="arch" type="xml">
+                <list string="Assignment Submissions" default_order="submitted_on desc">
+                    <field name="assignment_id"/>
+                    <field name="participant_id"/>
+                    <field name="submitted_on"/>
+                    <field name="score"/>
+                    <field name="reviewer_id"/>
+                    <field name="late"/>
+                    <field name="state"/>
+                    <field name="feedback"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- Assignment Submit Form View -->
+        <record id="view_ojt_assignment_submit_form" model="ir.ui.view">
+            <field name="name">ojt.assignment.submit.form</field>
+            <field name="model">ojt.assignment.submit</field>
+            <field name="arch" type="xml">
+                <form string="Assignment Submission">
+                    <header>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,submitted,scored"/>
+                        <button name="action_submit" string="Submit" type="object"
+                                class="btn-primary" invisible="state != 'draft'"/>
+                        <button name="action_score" string="Score" type="object"
+                                class="btn-secondary" invisible="state != 'submitted'"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                                <h1>
+                                    <field name="assignment_id"/>
+                                    <span> - </span>
+                                    <field name="participant_id"/>
+                                </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="submitted_on"/>
+                                <field name="late"/>
+                                <field name="state"/>
+                            </group>
+                            <group>
+                                <field name="score"/>
+                                <field name="reviewer_id"/>
+                                <field name="url_link"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Attachments">
+                                <field name="attachment_ids" widget="many2many_binary"/>
+                            </page>
+                            <page string="Feedback">
+                                <field name="feedback" placeholder="Reviewer's feedback..."/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>

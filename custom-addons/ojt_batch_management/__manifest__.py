@@ -9,22 +9,70 @@
         'mail',
         'portal',
         'contacts',
-        'website',    
+        'website',
+        'hr_recruitment',
+        'website_slides',
+        'event',
+        'survey',
+        'calendar',
+        'rating',
+        'utm',
     ],
     'data': [
+        # Security must come FIRST
+        'security/ojt_security.xml',
+        'security/ojt_security_rules.xml',
+        'security/ir.model.access.csv',
+        
+        # Data files
         'data/ojt_sequence.xml',
         'data/email_template_certificate.xml',
-        'security/ir.model.access.csv',
+        'data/email_template_proctoring_scheduled.xml',
+        'data/hr_recruitment_stage.xml',
+        'data/email_template.xml',
+        
+        # Reports
+        'report/report_certificate.xml',
+        'report/report_certificate_template.xml',
+        'report/report_actions.xml',
+        
+        # Actions BEFORE menus
+        'views/actions.xml',
+        
+        # Menus AFTER actions
+        'views/menus.xml',
+        
+        # Other views
         'views/ojt_batch_views.xml',
         'views/ojt_participant_views.xml',
-        'views/ojt_event_link_views.xml',
         'views/ojt_attendance_views.xml',
         'views/ojt_progress_views.xml',
         'views/ojt_certificate_views.xml',
-        'report/report_certificate_template.xml',
-        'report/report_actions.xml',
-        'views/portal/ojt_portal_templates.xml',
-        'views/menus.xml',
+        'views/ojt_assignment_views.xml',
+        'views/ojt_assignment_submit_views.xml',
+        'views/ojt_event_link_views.xml',
+        'views/website_recruitment_templates.xml',
+        'views/website_signup_templates.xml',
+        'views/hr_applicant_views.xml',
+
+        # New feature views
+        'views/ojt_meeting_attendance_views.xml',
+        'views/ojt_gamification_views.xml',
+        'views/ojt_proctoring_views.xml',
+
+        # Portal templates last
+        'views/portal/portal_ojt_dashboard.xml',
+        'views/portal/portal_ojt_assignment_view.xml',
+        'views/portal/portal_ojt_assignments_view.xml',
+        'views/portal/portal_ojt_attendance_view.xml',
+        'views/portal/portal_ojt_attendance_records_view.xml',
+        'views/portal/portal_ojt_progress_view.xml',
+        'views/portal/portal_ojt_submission_view.xml',
+        'views/portal/portal_ojt_certificate_view.xml',
+        'views/portal/portal_ojt_events_view.xml',
+        'views/portal/portal_ojt_meeting_attendance_view.xml',
+        'views/portal/portal_menu.xml',
+        'views/certificate_verify_templates.xml',
     ],
     'assets': {
         'web.assets_frontend': [

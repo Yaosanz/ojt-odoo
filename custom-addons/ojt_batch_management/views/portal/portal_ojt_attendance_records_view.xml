@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- ============================= -->
+    <!--      OJT PORTAL ATTENDANCE RECORDS PAGE     -->
+    <!-- ============================= -->
+    <template id="ojt_batch_management.portal_ojt_attendance_records" name="OJT Portal Attendance Records">
+        <t t-call="portal.portal_layout">
+            <div class="container mt-5 o_portal_my_ojt">
+                <h2 class="mb-4"><i class="fas fa-user-check mr-2"></i>Attendance Records</h2>
+
+                <t t-if="participant">
+                    <!-- ====================== -->
+                    <!-- Attendance Summary -->
+                    <!-- ====================== -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="card border-left-success shadow h-100">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                                Total Attendances
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                <t t-esc="participant.attendance_count"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-check-circle fa-2x text-success"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border-left-primary shadow h-100">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                Attendance Rate
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                <t t-esc="'%.1f' % participant.attendance_rate"/>%
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-calendar-check fa-2x text-primary"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card border-left-info shadow h-100">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                                Events Attended
+                                            </div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                                <t t-esc="len(attendances)"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-users fa-2x text-info"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ====================== -->
+                    <!-- Attendance Records Section -->
+                    <!-- ====================== -->
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-header bg-secondary text-white">
+                            <h5 class="mb-0">Detailed Attendance Records</h5>
+                        </div>
+                        <div class="card-body">
+                            <t t-if="attendances">
+                                <div class="row">
+                                    <t t-foreach="attendances" t-as="attendance">
+                                        <div class="col-lg-6 col-md-12 mb-3">
+                                            <div class="card border-left-secondary shadow-sm h-100">
+                                                <div class="card-body">
+                                                    <div class="row align-items-center">
+                                                        <div class="col-md-8">
+                                                            <h6 class="card-title mb-1"><t t-esc="attendance.event_link_id.name"/></h6>
+                                                            <p class="card-text mb-1">
+                                                                <small class="text-muted">
+                                                                    <i class="fas fa-calendar mr-1"></i><t t-esc="attendance.event_link_id.event_date"/>
+                                                                </small>
+                                                            </p>
+                                                            <p class="card-text mb-1">
+                                                                <small class="text-muted">
+                                                                    <i class="fas fa-clock mr-1"></i>Check-in: <t t-esc="attendance.check_in"/>
+                                                                    <t t-if="attendance.check_out">
+                                                                        | Check-out: <t t-esc="attendance.check_out"/>
+                                                                    </t>
+                                                                </small>
+                                                            </p>
+                                                            <p class="card-text mb-1">
+                                                                <small class="text-muted">
+                                                                    Duration: <t t-esc="'%.1f' % attendance.duration_minutes"/> minutes
+                                                                </small>
+                                                            </p>
+                                                            <p class="card-text mb-2">
+                                                                <span t-attf-class="badge badge-{{ attendance.presence == 'present' and 'success' or attendance.presence == 'late' and 'warning' or 'danger' }}">
+                                                                    <t t-esc="attendance.presence"/>
+                                                                </span>
+                                                                <span t-attf-class="badge badge-{{ attendance.method == 'online' and 'info' or attendance.method == 'qr' and 'primary' or 'secondary' }}">
+                                                                    <t t-esc="attendance.method"/>
+                                                                </span>
+                                                            </p>
+                                                            <t t-if="attendance.notes">
+                                                                <p class="card-text mb-2">
+                                                                    <small class="text-muted"><t t-esc="attendance.notes"/></small>
+                                                                </p>
+                                                            </t>
+                                                        </div>
+                                                        <div class="col-md-4 text-center">
+                                                            <a t-attf-href="/my/ojt/attendance/{{ attendance.id }}" class="btn btn-primary btn-sm">
+                                                                <i class="fas fa-eye mr-1"></i>View Details
+                                                            </a>
+                                                            <t t-if="not attendance.check_out">
+                                                                <br/>
+                                                                <form action="/my/ojt/attendance/checkout" method="post" style="display: inline;">
+                                                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                                                    <input type="hidden" name="attendance_id" t-att-value="attendance.id"/>
+                                                                    <button type="submit" class="btn btn-warning btn-sm mt-1">
+                                                                        <i class="fas fa-sign-out-alt mr-1"></i>Check Out
+                                                                    </button>
+                                                                </form>
+                                                            </t>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <div class="text-center py-4">
+                                    <i class="fas fa-history fa-3x text-muted mb-3"></i>
+                                    <p class="text-muted mb-0">No attendance records yet.</p>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+
+                </t>
+                <t t-else="">
+                    <div class="alert alert-warning">
+                        <h4 class="alert-heading">Not Enrolled</h4>
+                        <p>You are not currently enrolled in any OJT program.</p>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+</odoo>

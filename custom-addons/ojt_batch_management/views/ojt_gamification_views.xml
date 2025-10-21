@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Gamification Badge Tree View -->
+    <record id="view_ojt_gamification_list" model="ir.ui.view">
+        <field name="name">ojt.gamification.list</field>
+        <field name="model">ojt.gamification</field>
+        <field name="arch" type="xml">
+            <list string="OJT Badges">
+                <field name="name"/>
+                <field name="badge_type"/>
+                <field name="points"/>
+                <field name="rule_type"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Gamification Badge Form View -->
+    <record id="view_ojt_gamification_form" model="ir.ui.view">
+        <field name="name">ojt.gamification.form</field>
+        <field name="model">ojt.gamification</field>
+        <field name="arch" type="xml">
+            <form string="OJT Badge">
+                <sheet>
+                    <field name="image" widget="image" class="oe_avatar"/>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Badge Name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="badge_type"/>
+                            <field name="points"/>
+                            <field name="rule_type"/>
+                        </group>
+                        <group>
+                            <field name="active"/>
+                            <field name="rule_attendance" modifiers="{'invisible': [['badge_type', '!=', 'attendance']]}"/>
+                            <field name="rule_assignments" modifiers="{'invisible': [['badge_type', '!=', 'assignment']]}"/>
+                            <field name="rule_participations" modifiers="{'invisible': [['badge_type', '!=', 'participation']]}"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description">
+                            <field name="description" nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Badge Awards Tree View -->
+    <record id="view_ojt_badge_award_list" model="ir.ui.view">
+        <field name="name">ojt.badge.award.list</field>
+        <field name="model">ojt.badge.award</field>
+        <field name="arch" type="xml">
+            <list string="Badge Awards">
+                <field name="badge_id"/>
+                <field name="participant_id"/>
+                <field name="awarded_date"/>
+                <field name="points"/>
+                <field name="awarded_by"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Badge Awards Form View -->
+    <record id="view_ojt_badge_award_form" model="ir.ui.view">
+        <field name="name">ojt.badge.award.form</field>
+        <field name="model">ojt.badge.award</field>
+        <field name="arch" type="xml">
+            <form string="Badge Award">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="badge_id"/>
+                            <field name="participant_id"/>
+                            <field name="points"/>
+                        </group>
+                        <group>
+                            <field name="awarded_date"/>
+                            <field name="awarded_by"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Notes">
+                            <field name="notes" nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Participant Form View Inheritance -->
+    <record id="view_ojt_participant_form_gamification" model="ir.ui.view">
+        <field name="name">ojt.participant.form.gamification</field>
+        <field name="model">ojt.participant</field>
+        <field name="inherit_id" ref="ojt_batch_management.view_ojt_participant_form"/>
+        <field name="arch" type="xml">
+            <notebook position="inside">
+                <page string="Gamification">
+                    <group>
+                        <field name="total_points"/>
+                        <field name="rank"/>
+                    </group>
+                    <field name="badge_ids">
+                        <list>
+                            <field name="badge_id"/>
+                            <field name="awarded_date"/>
+                            <field name="points"/>
+                            <field name="awarded_by"/>
+                        </list>
+                    </field>
+                </page>
+            </notebook>
+        </field>
+    </record>
+
+    <!-- Gamification Actions -->
+    <record id="action_ojt_gamification" model="ir.actions.act_window">
+        <field name="name">OJT Badges</field>
+        <field name="res_model">ojt.gamification</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first OJT badge!
+            </p>
+            <p>
+                Badges are awarded to participants for their achievements and contributions.
+            </p>
+        </field>
+    </record>
+
+    <record id="action_ojt_badge_awards" model="ir.actions.act_window">
+        <field name="name">Badge Awards</field>
+        <field name="res_model">ojt.badge.award</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No badge awards yet
+            </p>
+            <p>
+                Badge awards track participant achievements and recognitions.
+            </p>
+        </field>
+    </record>
+
+    <!-- Gamification Menus -->
+    <menuitem id="menu_ojt_gamification"
+        name="Gamification"
+        parent="menu_ojt_root"
+        sequence="50"/>
+
+    <menuitem id="menu_ojt_badges"
+        name="Badges"
+        parent="menu_ojt_gamification"
+        action="action_ojt_gamification"
+        sequence="10"/>
+
+    <menuitem id="menu_ojt_badge_awards"
+        name="Awards"
+        parent="menu_ojt_gamification"
+        action="action_ojt_badge_awards"
+        sequence="20"/>
+</odoo>

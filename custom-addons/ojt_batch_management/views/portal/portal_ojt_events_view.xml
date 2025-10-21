@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- ============================= -->
+    <!--      OJT PORTAL EVENTS PAGE     -->
+    <!-- ============================= -->
+    <template id="ojt_batch_management.portal_ojt_events" name="OJT Portal Events">
+        <t t-call="portal.portal_layout">
+            <div class="container mt-5 o_portal_my_ojt">
+                <h2 class="mb-4">Events &amp; Agenda</h2>
+
+                <t t-if="participant">
+                    <!-- ====================== -->
+                    <!-- Events List Section -->
+                    <!-- ====================== -->
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">All Events</h5>
+                        </div>
+                        <div class="card-body">
+                            <t t-if="events">
+                                <div class="row">
+                                    <t t-foreach="events" t-as="event_link">
+                                        <div class="col-lg-6 col-md-12 mb-3">
+                                            <div class="card shadow-sm h-100 mb-3">
+                                                <div class="card-body">
+                                                    <div class="row align-items-center">
+                                                        <div class="col-md-8">
+                                                            <h6 class="card-title mb-1"><t t-esc="event_link.name"/></h6>
+                                                            <p class="card-text mb-1">
+                                                                <small class="text-muted">
+                                                                    <t t-esc="event_link.event_date"/>
+                                                                </small>
+                                                            </p>
+                                                            <p class="card-text mb-1">
+                                                                <small class="text-muted">
+                                                                    Supervisor: <t t-esc="event_link.supervisor"/>
+                                                                </small>
+                                                            </p>
+                                                            <p class="card-text mb-2">
+                                                                <span t-attf-class="badge badge-{{ event_link.status == 'planned' and 'primary' or event_link.status == 'ongoing' and 'warning' or 'success' }}">
+                                                                    <t t-esc="event_link.status"/>
+                                                                </span>
+                                                                <span t-attf-class="badge badge-{{ event_link.is_mandatory and 'danger' or 'secondary' }}">
+                                                                    <t t-esc="event_link.is_mandatory and 'Mandatory' or 'Optional'"/>
+                                                                </span>
+                                                            </p>
+                                                            <t t-if="event_link.description">
+                                                                <p class="card-text mb-2">
+                                                                    <small class="text-muted"><t t-esc="event_link.description"/></small>
+                                                                </p>
+                                                            </t>
+                                                            <t t-if="event_link.online_meeting_url">
+                                                                <p class="card-text mb-2">
+                                                                    <small class="text-info">
+                                                                        Online Meeting Available
+                                                                    </small>
+                                                                </p>
+                                                            </t>
+                                                            <t t-if="event_link.meeting_attendance_ids">
+                                                                <p class="card-text mb-2">
+                                                                    <small class="text-success">
+                                                                        <i class="fas fa-users mr-1"></i>Meeting Attendance Records: <t t-esc="len(event_link.meeting_attendance_ids)"/>
+                                                                    </small>
+                                                                </p>
+                                                            </t>
+                                                        </div>
+                                                        <div class="col-md-4 text-center">
+                                                            <t t-if="event_link.status in ['planned', 'ongoing']">
+                                                                <form action="/my/ojt/attendance/checkin" method="post" style="display: inline;">
+                                                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                                                    <input type="hidden" name="event_link_id" t-att-value="event_link.id"/>
+                                                                    <button type="submit" class="btn btn-primary btn-sm">
+                                                                        Check In
+                                                                    </button>
+                                                                </form>
+                                                                <t t-if="event_link.online_meeting_url">
+                                                                    <br/>
+                                                                    <a t-att-href="event_link.online_meeting_url" target="_blank" class="btn btn-info btn-sm mt-1">
+                                                                        Join Meeting
+                                                                    </a>
+                                                                </t>
+                                                            </t>
+                                                            <t t-else="">
+                                                                <span class="badge badge-secondary">Event Completed</span>
+                                                            </t>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </t>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <div class="text-center py-4">
+                                    
+                                    <p class="text-muted mb-0">No events available.</p>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+
+                </t>
+                <t t-else="">
+                    <div class="alert alert-warning">
+                        <h4 class="alert-heading">Not Enrolled</h4>
+                        <p>You are not currently enrolled in any OJT program.</p>
+                    </div>
+                </t>
+            </div>
+        </t>
+    </template>
+</odoo>

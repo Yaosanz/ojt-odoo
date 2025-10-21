@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Forgot Password Page -->
+        <template id="ojt_batch_management.forgot_password" name="OJT Forgot Password">
+            <t t-call="website.layout">
+                <div id="wrap" class="oe_structure oe_empty">
+                    <section class="s_cover bg-dark pt96 pb96 o_colored_level" data-vcss="001" data-snippet="s_cover" data-name="Cover">
+                        <div class="o_we_bg_filter bg-dark"/>
+                        <div class="container">
+                            <div class="row justify-content-center">
+                                <div class="col-12 col-md-8 col-lg-6">
+                                    <div class="card shadow">
+                                        <div class="card-body p-4">
+                                            <h2 class="card-title text-center mb-4">Forgot Password</h2>
+
+                                            <t t-if="error">
+                                                <div class="alert alert-danger" role="alert">
+                                                    <t t-esc="error"/>
+                                                </div>
+                                            </t>
+
+                                            <t t-if="success">
+                                                <div class="alert alert-success" role="alert">
+                                                    <t t-esc="success"/>
+                                                </div>
+                                            </t>
+
+                                            <form method="post" class="mb-4">
+                                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                                <div class="mb-3">
+                                                    <label for="email" class="form-label">Email Address</label>
+                                                    <input type="email" class="form-control" id="email" name="email" required="required"
+                                                           placeholder="Enter your email address"/>
+                                                </div>
+                                                <div class="d-grid">
+                                                    <button type="submit" class="btn btn-primary btn-lg">Reset Password</button>
+                                                </div>
+                                            </form>
+
+                                            <div class="text-center">
+                                                <a href="/web/login" class="text-decoration-none">Back to Login</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </t>
+        </template>
+
+        <!-- Sign Up Page -->
+        <template id="ojt_batch_management.signup" name="OJT Sign Up">
+            <t t-call="website.layout">
+                <div id="wrap" class="oe_structure oe_empty">
+                    <section class="s_cover bg-dark pt96 pb96 o_colored_level" data-vcss="001" data-snippet="s_cover" data-name="Cover">
+                        <div class="o_we_bg_filter bg-dark"/>
+                        <div class="container">
+                            <div class="row justify-content-center">
+                                <div class="col-12 col-md-8 col-lg-6">
+                                    <div class="card shadow">
+                                        <div class="card-body p-4">
+                                            <h2 class="card-title text-center mb-4">Join OJT Program</h2>
+                                            <p class="text-center text-muted mb-4">
+                                                Register for the On-The-Job Training program
+                                            </p>
+
+                                            <t t-if="error">
+                                                <div class="alert alert-danger" role="alert">
+                                                    <t t-if="error.get('general')">
+                                                        <t t-esc="error['general']"/>
+                                                    </t>
+                                                    <t t-if="not error.get('general')">
+                                                        <ul class="mb-0">
+                                                            <t t-foreach="error" t-as="field">
+                                                                <li><t t-esc="error[field]"/></li>
+                                                            </t>
+                                                        </ul>
+                                                    </t>
+                                                </div>
+                                            </t>
+
+                                            <t t-if="success">
+                                                <div class="alert alert-success" role="alert">
+                                                    <t t-esc="success"/>
+                                                </div>
+                                            </t>
+
+                                            <form method="post" class="mb-4" t-attf-action="">
+                                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                                                <div class="mb-3">
+                                                    <label for="name" class="form-label">Full Name *</label>
+                                                    <input type="text" class="form-control" id="name" name="name" required="required"
+                                                           placeholder="Enter your full name"/>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label for="email" class="form-label">Email Address *</label>
+                                                    <input type="email" class="form-control" id="email" name="email" required="required"
+                                                           placeholder="Enter your email address"/>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label for="phone" class="form-label">Phone Number</label>
+                                                    <input type="tel" class="form-control" id="phone" name="phone"
+                                                           placeholder="Enter your phone number"/>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label for="batch_id" class="form-label">OJT Batch *</label>
+                                                    <select class="form-select" id="batch_id" name="batch_id" required="required">
+                                                        <option value="">Select a batch</option>
+                                                        <t t-foreach="available_batches" t-as="batch">
+                                                            <option t-att-value="batch.id">
+                                                                <t t-esc="batch.name"/> -
+                                                                <t t-esc="batch.start_date"/> to <t t-esc="batch.end_date"/>
+                                                            </option>
+                                                        </t>
+                                                    </select>
+                                                </div>
+
+                                                <div class="d-grid mb-3">
+                                                    <button type="submit" class="btn btn-primary btn-lg">Register</button>
+                                                </div>
+                                            </form>
+
+                                            <div class="text-center">
+                                                <p class="mb-2">Already have an account?</p>
+                                                <a href="/web/login" class="btn btn-outline-primary">Login</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </t>
+        </template>
+
+        <!-- Activation Result Page -->
+        <template id="ojt_batch_management.activation_result" name="OJT Activation Result">
+            <t t-call="website.layout">
+                <div id="wrap" class="oe_structure oe_empty">
+                    <section class="s_cover bg-dark pt96 pb96 o_colored_level" data-vcss="001" data-snippet="s_cover" data-name="Cover">
+                        <div class="o_we_bg_filter bg-dark"/>
+                        <div class="container">
+                            <div class="row justify-content-center">
+                                <div class="col-12 col-md-8 col-lg-6">
+                                    <div class="card shadow">
+                                        <div class="card-body p-4 text-center">
+                                            <t t-if="success">
+                                                <div class="mb-4">
+                                                    <i class="fa fa-check-circle text-success" style="font-size: 4rem;"></i>
+                                                </div>
+                                                <h2 class="card-title text-success mb-3">Account Activated!</h2>
+                                                <p class="mb-4">
+                                                    <t t-esc="message"/>
+                                                </p>
+                                                <a t-att-href="login_url" class="btn btn-primary btn-lg">Login Now</a>
+                                            </t>
+
+                                            <t t-else="">
+                                                <div class="mb-4">
+                                                    <i class="fa fa-exclamation-triangle text-danger" style="font-size: 4rem;"></i>
+                                                </div>
+                                                <h2 class="card-title text-danger mb-3">Activation Failed</h2>
+                                                <p class="mb-4">
+                                                    <t t-esc="message"/>
+                                                </p>
+                                                <a href="/ojt/signup" class="btn btn-primary btn-lg">Try Again</a>
+                                            </t>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </t>
+        </template>
+
+    </data>
+</odoo>

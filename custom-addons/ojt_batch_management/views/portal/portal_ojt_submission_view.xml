@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- ============================= -->
+    <!-- Submission Detail View -->
+    <!-- ============================= -->
+    <template id="portal_ojt_submission_view" name="Submission Detail View Portal">
+        <t t-call="portal.portal_layout">
+            <div class="container mt-5 o_portal_submission_view">
+                <div class="mb-3">
+                    <a href="/my/ojt" class="btn btn-secondary">
+                        <i class="fa fa-arrow-left"></i> Back to Dashboard
+                    </a>
+                </div>
+                <h2>Submission Details</h2>
+                <t t-if="submission">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-primary text-white">
+                            <h5><t t-esc="submission.assignment_id.name"/></h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Submitted On:</strong> <t t-esc="submission.submitted_on"/></p>
+                                    <p><strong>Late:</strong> <t t-esc="submission.late"/></p>
+                                    <p><strong>Status:</strong>
+                                        <span t-attf-class="badge badge-{{ submission.state == 'scored' and 'success' or submission.state == 'submitted' and 'info' or 'secondary' }}">
+                                            <t t-esc="submission.state"/>
+                                        </span>
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Score:</strong> <t t-esc="submission.score"/></p>
+                                    <p><strong>Reviewer:</strong> <t t-esc="submission.reviewer_id.name"/></p>
+                                    <p><strong>URL Link:</strong> <a t-att="href" t-att-href="submission.url_link" target="_blank"><t t-esc="submission.url_link"/></a></p>
+                                </div>
+                            </div>
+                            <t t-if="submission.feedback">
+                                <div class="mt-3">
+                                    <strong>Feedback:</strong>
+                                    <p><t t-esc="submission.feedback"/></p>
+                                </div>
+                            </t>
+                            <t t-if="submission.attachment_ids">
+                                <div class="mt-3">
+                                    <strong>Attachments:</strong>
+                                    <ul>
+                                        <t t-foreach="submission.attachment_ids" t-as="attachment">
+                                            <li><a t-att="href" t-att-href="attachment.url" target="_blank"><t t-esc="attachment.name"/></a></li>
+                                        </t>
+                                    </ul>
+                                </div>
+                            </t>
+
+                            <!-- Feedback Section for Participants -->
+                            <t t-if="submission.state == 'scored' and not submission.feedback">
+                                <div class="mt-4">
+                                    <h5>Provide Feedback</h5>
+                                    <form action="/my/ojt/submission/feedback" method="post">
+                                        <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                        <input type="hidden" name="submission_id" t-att-value="submission.id"/>
+
+                                        <div class="form-group">
+                                            <label for="participant_feedback">Your Feedback</label>
+                                            <textarea class="form-control" id="participant_feedback" name="participant_feedback" rows="3" placeholder="Share your thoughts about this assignment..." required="required"></textarea>
+                                        </div>
+
+                                        <button type="submit" class="btn btn-info">
+                                            <i class="fa fa-comment"></i> Submit Feedback
+                                        </button>
+                                    </form>
+                                </div>
+                            </t>
+                        </div>
+                    </div>
+
+                    <!-- Success/Error Messages -->
+                    <t t-if="success == 'feedback_submitted'">
+                        <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                            <strong>Success!</strong> Your feedback has been submitted successfully.
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&#215;</span>
+                            </button>
+                        </div>
+                    </t>
+                    <t t-if="error == 'feedback_failed'">
+                        <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                            <strong>Error!</strong> Feedback submission failed. Please try again.
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&#215;</span>
+                            </button>
+                        </div>
+                    </t>
+                </t>
+                <t t-else="">
+                    <div class="alert alert-warning mt-3">Submission not found.</div>
+                </t>
+            </div>
+        </t>
+    </template>
+</odoo>

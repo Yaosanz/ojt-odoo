@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="email_template_ojt_account_activation" model="mail.template">
+            <field name="name">OJT Account Activation</field>
+            <field name="model_id" ref="ojt_batch_management.model_ojt_participant"/>
+            <field name="subject">OJT Account Activation - ${object.batch_id.name}</field>
+            <field name="email_from">noreply@example.com</field>
+            <field name="email_to">${object.partner_id.email}</field>
+            <field name="body_html">
+                <![CDATA[
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px 0px 9px 0px; padding: 0px; font-size: 13px;">
+                        Dear ${object.partner_id.name},
+                    </p>
+                    <p style="margin: 0px 0px 9px 0px; padding: 0px; font-size: 13px;">
+                        Congratulations! You have been selected for the ${object.batch_id.name} On-The-Job Training program.
+                    </p>
+                    <p style="margin: 0px 0px 9px 0px; padding: 0px; font-size: 13px;">
+                        Your OJT account has been created and is ready for activation. Here are your login details:
+                    </p>
+                    <p style="margin: 0px 0px 9px 0px; padding: 0px; font-size: 13px;">
+                        Login URL: ${object.get_portal_url()}
+                    </p>
+                    <p style="margin: 0px 0px 9px 0px; padding: 0px; font-size: 13px;">
+                        Email/Login: ${object.partner_id.email}
+                    </p>
+                    <p style="margin: 0px 0px 9px 0px; padding: 0px; font-size: 13px;">
+                        Temporary Password: ${object.get_temporary_password()}
+                    </p>
+                    <p style="margin: 0px 0px 9px 0px; padding: 0px; font-size: 13px;">
+                        <strong>Important:</strong> Please change your password after first login for security purposes.
+                    </p>
+                    <p style="margin: 0px 0px 9px 0px; padding: 0px; font-size: 13px;">
+                        Your training period: ${object.start_date} to ${object.end_date}
+                    </p>
+                    <p style="margin: 0px 0px 9px 0px; padding: 0px; font-size: 13px;">
+                        If you have any questions, please contact our HR team.
+                    </p>
+                    <p style="margin: 0px 0px 9px 0px; padding: 0px; font-size: 13px;">
+                        Welcome to the team!
+                    </p>
+                    <p style="margin: 0px 0px 9px 0px; padding: 0px; font-size: 13px;">
+                        Best regards,<br/>
+                        OJT Administration Team<br/>
+                        ${object.env.user.company_id.name}
+                    </p>
+                </div>
+                ]]>
+            </field>
+        </record>
+
+        <!-- OJT Activation Email Template -->
+        <record id="email_template_ojt_activation" model="mail.template">
+            <field name="name">OJT Account Activation</field>
+            <field name="model_id" ref="ojt_batch_management.model_ojt_participant"/>
+            <field name="subject">Activate Your OJT Account - ${object.batch_id.name}</field>
+            <field name="email_from">noreply@example.com</field>
+            <field name="email_to">${object.partner_id.email}</field>
+            <field name="body_html">
+                <![CDATA[
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px 0px 9px 0px; padding: 0px; font-size: 13px;">
+                        Dear ${object.partner_id.name},
+                    </p>
+                    <p style="margin: 0px 0px 9px 0px; padding: 0px; font-size: 13px;">
+                        Welcome to the ${object.batch_id.name} On-The-Job Training program!
+                    </p>
+                    <p style="margin: 0px 0px 9px 0px; padding: 0px; font-size: 13px;">
+                        Your account has been created successfully. To complete your registration and access the OJT portal, please activate your account by clicking the link below:
+                    </p>
+                    <p style="margin: 0px 0px 9px 0px; padding: 0px; font-size: 13px;">
+                        <a href="${object.get_activation_url()}" style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Activate My Account</a>
+                    </p>
+                    <p style="margin: 0px 0px 9px 0px; padding: 0px; font-size: 13px;">
+                        <strong>Activation Link:</strong> ${object.get_activation_url()}
+                    </p>
+                    <p style="margin: 0px 0px 9px 0px; padding: 0px; font-size: 13px;">
+                        This link will expire in 7 days. If you did not request this registration, please ignore this email.
+                    </p>
+                    <p style="margin: 0px 0px 9px 0px; padding: 0px; font-size: 13px;">
+                        After activation, you will receive your login credentials and can start accessing the OJT portal.
+                    </p>
+                    <p style="margin: 0px 0px 9px 0px; padding: 0px; font-size: 13px;">
+                        Best regards,<br/>
+                        OJT Administration Team<br/>
+                        ${object.env.user.company_id.name}
+                    </p>
+                </div>
+                ]]>
+            </field>
+        </record>
+
+        <!-- OJT Welcome Email Template -->
+        <record id="email_template_ojt_welcome" model="mail.template">
+            <field name="name">OJT Welcome Email</field>
+            <field name="model_id" ref="ojt_batch_management.model_ojt_participant"/>
+            <field name="subject">Welcome to OJT Portal - Your Login Details</field>
+            <field name="email_from">noreply@example.com</field>
+            <field name="email_to">${object.partner_id.email}</field>
+            <field name="body_html">
+                <![CDATA[
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px 0px 9px 0px; padding: 0px; font-size: 13px;">
+                        Dear ${object.partner_id.name},
+                    </p>
+                    <p style="margin: 0px 0px 9px 0px; padding: 0px; font-size: 13px;">
+                        Congratulations! Your account has been successfully activated for the ${object.batch_id.name} On-The-Job Training program.
+                    </p>
+                    <p style="margin: 0px 0px 9px 0px; padding: 0px; font-size: 13px;">
+                        You can now access the OJT portal with the following credentials:
+                    </p>
+                    <p style="margin: 0px 0px 9px 0px; padding: 0px; font-size: 13px;">
+                        <strong>Portal URL:</strong> ${object.get_portal_url()}
+                    </p>
+                    <p style="margin: 0px 0px 9px 0px; padding: 0px; font-size: 13px;">
+                        <strong>Email/Login:</strong> ${object.partner_id.email}
+                    </p>
+                    <p style="margin: 0px 0px 9px 0px; padding: 0px; font-size: 13px;">
+                        <strong>Temporary Password:</strong> ${object.get_temporary_password()}
+                    </p>
+                    <p style="margin: 0px 0px 9px 0px; padding: 0px; font-size: 13px;">
+                        <strong>Important:</strong> Please change your password after first login for security purposes.
+                    </p>
+                    <p style="margin: 0px 0px 9px 0px; padding: 0px; font-size: 13px;">
+                        Your training period: ${object.start_date} to ${object.end_date}
+                    </p>
+                    <p style="margin: 0px 0px 9px 0px; padding: 0px; font-size: 13px;">
+                        In the portal, you can:
+                    </p>
+                    <ul style="margin: 0px 0px 9px 0px; padding: 0px; font-size: 13px;">
+                        <li>View your training schedule and events</li>
+                        <li>Check your attendance records</li>
+                        <li>Access and submit assignments</li>
+                        <li>Track your progress and performance</li>
+                        <li>Download certificates upon completion</li>
+                    </ul>
+                    <p style="margin: 0px 0px 9px 0px; padding: 0px; font-size: 13px;">
+                        If you have any questions, please contact our HR team.
+                    </p>
+                    <p style="margin: 0px 0px 9px 0px; padding: 0px; font-size: 13px;">
+                        Welcome to the team and good luck with your training!
+                    </p>
+                    <p style="margin: 0px 0px 9px 0px; padding: 0px; font-size: 13px;">
+                        Best regards,<br/>
+                        OJT Administration Team<br/>
+                        ${object.env.user.company_id.name}
+                    </p>
+                </div>
+                ]]>
+            </field>
+        </record>
+
+    </data>
+</odoo>
